@@ -15,7 +15,7 @@ import WinLossState from "@/components/win-loss/win-loss-stats";
 export default function Page() {
   return (
     <>
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex items-center justify-between gap-4 px-4 md:px-0">
         <div className="space-y-1">
           <h1 className="text-2xl font-semibold">Oilà, Larry!</h1>
           <p className="text-sm text-muted-foreground">

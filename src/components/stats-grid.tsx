@@ -7,6 +7,13 @@ import {
   TooltipTrigger,
 } from "./ui/tooltip";
 import { Info } from "lucide-react";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "./ui/carousel";
 
 interface StatsCardProps {
   title: string;
@@ -30,7 +37,7 @@ export function StatsCard({
   const trendColor = isPositive ? "text-green-500" : "text-red-500";
 
   return (
-    <div className="relative p-4 lg:p-5 group before:absolute before:inset-y-8 before:right-0 before:w-px before:bg-gradient-to-b before:from-border/30 before:via-border before:to-border/30 last:before:hidden">
+    <div className="relative p-4 lg:p-5 group hover:bg-muted/20 border-r border-border last:border-r-0">
       <div className="relative flex items-center gap-4">
         {/* Icon */}
         <div className="max-[480px]:hidden size-10 shrink-0 rounded-full bg-muted border border-border flex items-center justify-center text-primary">
@@ -75,12 +82,31 @@ interface StatsGridProps {
   tooltip: string;
 }
 
+// export function TradingStatsGrid({ stats }: StatsGridProps) {
+//   return (
+//     <div className="grid grid-cols-2 min-[1200px]:grid-cols-4 border border-border rounded-xl bg-transparent">
+//       {stats.map((stat) => (
+//         <StatsCard key={stat.title} {...stat} />
+//       ))}
+//     </div>
+//   );
+// }
+
 export function TradingStatsGrid({ stats }: StatsGridProps) {
   return (
-    <div className="grid grid-cols-2 min-[1200px]:grid-cols-4 border border-border rounded-xl bg-transparent">
-      {stats.map((stat) => (
-        <StatsCard key={stat.title} {...stat} />
-      ))}
-    </div>
+    <Carousel className="w-full  ">
+      <CarouselContent className="-ml-1 bg-transparent space-x-4 p-2">
+        {stats.map((stat, index) => (
+          <CarouselItem
+            key={index}
+            className="pl-1 basis-[80%] border rounded-lg md:basis-[25%] lg:basis-1/3"
+          >
+            <StatsCard key={stat.title} {...stat} />
+          </CarouselItem>
+        ))}
+      </CarouselContent>
+      <CarouselPrevious />
+      <CarouselNext />
+    </Carousel>
   );
 }

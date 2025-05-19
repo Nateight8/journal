@@ -62,7 +62,7 @@ export function Overview({ data }: OverviewProps) {
   return (
     <Card className="gap-4">
       <CardHeader>
-        <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-col md:flex-row flex-wrap md:items-center md:justify-between gap-3">
           <div className="space-y-0.5">
             <CardTitle>Portfolio Value</CardTitle>
             <div className="font-bold text-3xl mb-1">
@@ -80,22 +80,24 @@ export function Overview({ data }: OverviewProps) {
               {performanceData.value})
             </div>
           </div>
-          <div className="bg-muted dark:bg-background/50 inline-flex h-8 rounded-full p-1 shrink-0">
-            <RadioGroup
-              value={selectedValue}
-              onValueChange={setSelectedValue}
-              className="group text-xs after:bg-background dark:after:bg-card/64 has-focus-visible:after:border-ring has-focus-visible:after:ring-ring/50 relative inline-grid grid-cols-[repeat(5,1fr)] items-center gap-0 font-medium after:absolute after:inset-y-0 after:w-1/5 after:rounded-full after:shadow-xs dark:after:inset-shadow-[0_1px_rgb(255_255_255/0.15)] after:transition-[translate,box-shadow] after:duration-300 after:[transition-timing-function:cubic-bezier(0.16,1,0.3,1)] has-focus-visible:after:ring-[3px] [&:after]:translate-x-[calc(var(--selected-index)*100%)]"
-              data-state={selectedValue}
-              style={
-                {
-                  "--selected-index": selectedIndex,
-                } as React.CSSProperties
-              }
-            >
-              {TIME_PERIOD_OPTIONS.map((value) => (
-                <ViewOption key={value} id={id} value={value} />
-              ))}
-            </RadioGroup>
+          <div className="flex w-full justify-end">
+            <div className="bg-muted dark:bg-background/50 inline-flex h-8 rounded-full p-1 shrink-0">
+              <RadioGroup
+                value={selectedValue}
+                onValueChange={setSelectedValue}
+                className="group text-xs after:bg-background dark:after:bg-card/64 has-focus-visible:after:border-ring has-focus-visible:after:ring-ring/50 relative inline-grid grid-cols-[repeat(5,1fr)] items-center gap-0 font-medium after:absolute after:inset-y-0 after:w-1/5 after:rounded-full after:shadow-xs dark:after:inset-shadow-[0_1px_rgb(255_255_255/0.15)] after:transition-[translate,box-shadow] after:duration-300 after:[transition-timing-function:cubic-bezier(0.16,1,0.3,1)] has-focus-visible:after:ring-[3px] [&:after]:translate-x-[calc(var(--selected-index)*100%)]"
+                data-state={selectedValue}
+                style={
+                  {
+                    "--selected-index": selectedIndex,
+                  } as React.CSSProperties
+                }
+              >
+                {TIME_PERIOD_OPTIONS.map((value) => (
+                  <ViewOption key={value} id={id} value={value} />
+                ))}
+              </RadioGroup>
+            </div>
           </div>
         </div>
       </CardHeader>
