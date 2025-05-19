@@ -7,13 +7,7 @@ import {
   TooltipTrigger,
 } from "./ui/tooltip";
 import { Info } from "lucide-react";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "./ui/carousel";
+import { Carousel, CarouselContent, CarouselItem } from "./ui/carousel";
 
 interface StatsCardProps {
   title: string;
