@@ -10,24 +10,11 @@ import { EquityCurve } from "@/components/charts/equity-curve";
 
 export default function Page() {
   return (
-    <>
-      {/* <div className="flex items-center justify-between gap-4">
-        <div className="space-y-1">
-          <h1 className="text-2xl font-semibold">Oilà, Larry!</h1>
-          <p className="text-sm text-muted-foreground">
-            Here&rsquo;s an overview of your performance lately. Keep track of
-            your progress and make the most of it!
-          </p>
-        </div>
-        <Button className="px-3">Add Contact</Button>
-      </div> */}
-      {/* Numbers */}
-      {/* <Overview /> */}
-      <PerformanceTabs />
-
-      <EquityCurve />
-
-      {/* Table */}
-    </>
+    <div className="px-4 md:px-0">
+      <div className="space-y-4">
+        <PerformanceTabs />
+        <EquityCurve />
+      </div>
+    </div>
   );
 }
