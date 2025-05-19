@@ -20,7 +20,7 @@ export default function RootLayout({
       <body className={`${fontSans.variable} font-sans antialiased`}>
         <SidebarProvider>
           <AppSidebar />
-          <SidebarInset className="overflow-hidden md:px-1.5">
+          <SidebarInset className="md:px-1.5">
             <div className="flex bg-muted/50 border flex-1 flex-col gap-4 lg:gap-6 pb-4 lg:pb-6 px-0 md:px-6 lg:px-8">
               {/* Page intro */}
               <div className="px-4 md:px-0">

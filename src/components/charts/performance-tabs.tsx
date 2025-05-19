@@ -1,5 +1,6 @@
 "use client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { EmptyChart } from "./empty-chart";
 import {
   Bitcoin,
@@ -18,17 +19,20 @@ export default function PerformanceTabs() {
   return (
     <Tabs defaultValue="stocks" className="w-full">
       <div className="border-b w-full">
-        <TabsList className="h-auto rounded-none border-b bg-transparent p-0">
-          {tablist.map((t) => (
-            <TabsTrigger
-              key={t.value}
-              value={t.value}
-              className="data-[state=active]:after:bg-primary border-none cursor-pointer relative rounded-none py-2 after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none"
-            >
-              {t.label}
-            </TabsTrigger>
-          ))}
-        </TabsList>
+        <ScrollArea className="w-full">
+          <TabsList className="h-auto rounded-none border-b bg-transparent p-0 inline-flex">
+            {tablist.map((t) => (
+              <TabsTrigger
+                key={t.value}
+                value={t.value}
+                className="data-[state=active]:after:bg-primary border-none cursor-pointer relative rounded-none py-2 px-4 after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+              >
+                {t.label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+          <ScrollBar orientation="horizontal" className="h-0" />
+        </ScrollArea>
       </div>
       <TabsContent value="stocks">
         <PerformanceCarrousel />

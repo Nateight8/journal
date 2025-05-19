@@ -31,11 +31,11 @@ export default function Page() {
         <Performance data={mockData.performance.metrics} />
         <Recent data={mockData.trades} accounts={mockData.accounts} />
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="md:col-span-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="h-full">
           <WinLossState />
         </div>
-        <div>
+        <div className="h-full">
           <HeatMap />
         </div>
       </div>

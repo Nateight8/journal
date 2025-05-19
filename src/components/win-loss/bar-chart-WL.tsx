@@ -39,10 +39,7 @@ export function BarChartWL() {
   return (
     <div className="flex flex-col">
       <div>
-        <ChartContainer
-          config={chartConfig}
-          className="mx-auto aspect-square max-h-[350px]"
-        >
+        <ChartContainer config={chartConfig} className="mx-auto max-h-[350px]">
           <BarChart
             accessibilityLayer
             data={chartData}

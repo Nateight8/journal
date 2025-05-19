@@ -24,7 +24,7 @@ export default function WinLossState() {
     <Card className="">
       <CardHeader className="justify-between items-center flex">
         <div className="">
-          <CardTitle>Trad Performance</CardTitle>
+          <CardTitle>PNL STATS</CardTitle>
           <CardDescription>Last 30 trading days</CardDescription>
         </div>
         <div className="bg-muted dark:bg-background/50 inline-flex h-8 rounded-full p-1 shrink-0">
