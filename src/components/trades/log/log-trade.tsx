@@ -1,4 +1,3 @@
-import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { Close, Executed, ModifyLof } from "./log-forms";
@@ -10,7 +9,7 @@ export default function LogTrades() {
   // console.log("SELECTED TRADE", trade);
 
   return (
-    <Card className="w-full max-w-sm mx-auto">
+    <div className="w-full mx-auto">
       <Tabs defaultValue="log" className="items-center">
         {/* <TabsContent value="log" className="w-full p-2">
           <h2 className="text-lg  text-center font-semibold">Log Trade</h2>
@@ -43,7 +42,7 @@ export default function LogTrades() {
           <Close />
         </TabsContent>
       </Tabs>
-    </Card>
+    </div>
   );
 }
 

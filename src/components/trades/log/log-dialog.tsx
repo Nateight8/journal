@@ -34,10 +34,8 @@ export default function LogDialog() {
       <DialogTrigger asChild>
         <Button variant="outline">Journal</Button>
       </DialogTrigger>
-      <DialogContent className="p-0 border-0 shadow-none bg-transparent">
-        <div className="relative">
-          <LogTrade />
-        </div>
+      <DialogContent className=" md:max-w-sm px-2 py-4">
+        <LogTrade />
       </DialogContent>
     </Dialog>
   );
