@@ -6,7 +6,7 @@ export const metadata: Metadata = {
 };
 
 import { Overview } from "@/components/charts/overview";
-import { Recent } from "@/components/trades/recent";
+import Recent from "@/components/trades/recent";
 import { Performance } from "@/components/trades/performance";
 // import { WinLossMeter } from "@/components/win-loss/radial-chart";
 import HeatMap from "@/components/charts/heat-map";
@@ -27,10 +27,19 @@ export default function Page() {
       {/* Numbers */}
       <Overview data={mockData.performance.overview} />
 
-      <div className="grid  md:grid-cols-2 gap-4">
+      <div className="md:grid hidden  md:grid-cols-2 gap-4 w-full">
         <Performance data={mockData.performance.metrics} />
-        <Recent data={mockData.trades} accounts={mockData.accounts} />
+
+        <Recent />
+        {/* </CardContent> */}
       </div>
+
+      <div className="px-4 md:px-0 md:hidden">
+        <div className="space-y-4">
+          <Recent />
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="h-full">
           <WinLossState />
