@@ -13,6 +13,7 @@ import { AccountProfile } from "./account-profile";
 import { GoalSetting } from "./goal-setting";
 import { accountOperations } from "@/graphql/account-operations";
 import { useMutation } from "@apollo/client";
+import userOperations from "@/graphql/user-operations";
 
 // Define the experience levels as a constant to reuse in the form
 export const experienceLevels = [
@@ -111,24 +112,57 @@ export function AccountSetup() {
   const [step, setStep] = React.useState(1);
   const client = useApolloClient();
   const [setUpAccount] = useMutation(accountOperations.Mutations.setUpAccount, {
-    onCompleted: () => {
-      // Invalidate and refetch the 'Me' query to update the UI with the latest data
-      client.refetchQueries({
-        include: ['Me'],
-      });
+    onCompleted: async () => {
+      try {
+        // Force a network request to get the latest user data
+        const { data } = await client.query({
+          query: userOperations.Queries.me,
+          fetchPolicy: "network-only",
+        });
+
+        // If we have the me data, update the cache
+        if (data?.me) {
+          client.cache.modify({
+            fields: {
+              me: () => ({
+                ...data.me,
+                __typename: "User",
+              }),
+            },
+          });
+        }
+      } catch (error) {
+        console.error("Error refetching user data:", error);
+      }
     },
   });
 
   const onSubmit = (data: OnboardingFormValues) => {
     console.log("SUBMIT", data);
-    setUpAccount({ 
-      variables: { 
-        input: { 
-          ...data 
-        } 
-      } 
+
+    // Save trading account data to localStorage
+    localStorage.setItem(
+      "tradingAccount",
+      JSON.stringify({
+        size: data.accountSize,
+        goal: data.goal,
+        experienceLevel: data.experienceLevel,
+        biggestChallenge: data.biggestChallenge,
+        accountName: data.accountName,
+        broker: data.broker,
+        accountCurrency: data.accountCurrency,
+      })
+    );
+
+    setUpAccount({
+      variables: {
+        input: {
+          ...data,
+        },
+      },
     });
   };
+
   return (
     <>
       <div className="container mx-auto max-w-6xl px-4 py-8">

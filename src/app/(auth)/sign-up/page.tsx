@@ -2,7 +2,8 @@
 import { useQuery } from "@apollo/client";
 import Authenticate from "./_components/authenticate";
 import userOperations, { MeResponse } from "@/graphql/user-operations";
-import { AccountSetup } from "./_components/steps/account-setup/account-setuo";
+import { AccountSetup } from "./_components/steps/account-setup/account-setup";
+import { SafetyNet } from "./_components/steps/safety/safety-net";
 
 export default function Page() {
   const { data, loading } = useQuery<MeResponse>(userOperations.Queries.me);
@@ -17,6 +18,10 @@ export default function Page() {
 
   if (data?.me.onboardingStep === "account_setup") {
     return <AccountSetup />;
+  }
+
+  if (data?.me.onboardingStep === "safety_net") {
+    return <SafetyNet />;
   }
 
   return <div className="">completed</div>;

@@ -19,11 +19,7 @@ export interface User {
   name: string;
   id: string;
   email: string;
-  onboardingStep:
-    | "account_setup"
-    | "profile_setup"
-    | "preferences"
-    | "completed";
+  onboardingStep: "account_setup" | "safety_net" | "preferences" | "completed";
 }
 
 export interface MeResponse {

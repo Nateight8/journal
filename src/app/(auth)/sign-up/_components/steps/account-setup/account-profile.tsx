@@ -22,7 +22,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 import { UseFormReturn } from "react-hook-form";
-import { OnboardingFormValues } from "./account-setuo";
+import { OnboardingFormValues } from "./account-setup";
 
 type AccountSize = {
   value: number;

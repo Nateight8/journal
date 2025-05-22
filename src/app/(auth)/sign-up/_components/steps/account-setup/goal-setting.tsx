@@ -12,7 +12,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 
 import { type UseFormReturn } from "react-hook-form";
-import { type OnboardingFormValues } from "./account-setuo";
+import { type OnboardingFormValues } from "./account-setup";
 
 export function GoalSetting({
   form,

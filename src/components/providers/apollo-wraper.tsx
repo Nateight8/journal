@@ -42,8 +42,20 @@ function makeClient() {
 
   // use the `ApolloClient` from "@apollo/experimental-nextjs-app-support"
   return new ApolloClient({
-    // use the `InMemoryCache` from "@apollo/experimental-nextjs-app-support"
-    cache: new InMemoryCache(),
+    cache: new InMemoryCache({
+      typePolicies: {
+        Query: {
+          fields: {
+            tradingAccount: {
+              read() {
+                // This will be populated by the mutation
+                return undefined;
+              },
+            },
+          },
+        },
+      },
+    }),
     link: splitLink,
     defaultOptions: {
       // Use caching strategy that works better with SSR and hydration
