@@ -31,5 +31,14 @@ export const accountOperations = {
         }
       }
     `,
+
+    tradingPlan: gql`
+      mutation CreateTradingPlan($input: TradingPlanInput!) {
+        createTradingPlan(input: $input) {
+          success
+          message
+        }
+      }
+    `,
   },
 };
