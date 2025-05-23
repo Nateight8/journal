@@ -12,7 +12,16 @@ const userOperations = {
       }
     `,
   },
-  Mutations: {},
+  Mutations: {
+    logout: gql`
+      mutation Logout {
+        logout {
+          success
+          message
+        }
+      }
+    `,
+  },
 };
 
 export interface User {
