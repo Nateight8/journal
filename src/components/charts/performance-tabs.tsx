@@ -17,7 +17,7 @@ export default function PerformanceTabs() {
   };
 
   return (
-    <Tabs defaultValue="stocks" className="w-full">
+    <Tabs defaultValue="all" className="w-full">
       <div className="border-b w-full">
         <ScrollArea className="w-full">
           <TabsList className="h-auto rounded-none border-b bg-transparent p-0 inline-flex">
@@ -34,6 +34,10 @@ export default function PerformanceTabs() {
           <ScrollBar orientation="horizontal" className="h-0" />
         </ScrollArea>
       </div>
+      <TabsContent value="all">
+        <PerformanceCarrousel />
+      </TabsContent>
+
       <TabsContent value="stocks">
         <PerformanceCarrousel />
       </TabsContent>
@@ -82,6 +86,10 @@ export default function PerformanceTabs() {
 }
 
 const tablist = [
+  {
+    value: "all",
+    label: "All",
+  },
   {
     value: "stocks",
     label: "Stocks",

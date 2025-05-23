@@ -14,86 +14,9 @@ import { CheckCircledIcon, ClockIcon } from "@radix-ui/react-icons";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
-// Mock data for 5 trades
-const mockTrades = [
-  {
-    id: "1",
-    symbol: "EURUSD",
-    date: "2024-03-20",
-    account: "FTMO FUNDED",
-    direction: "Long" as const,
-    status: "CLOSED" as const,
-    projectedEntry: 1.085,
-    actualEntry: 1.0845,
-    projectedSL: 1.082,
-    actualExit: 1.087,
-    actualPL: 25.0,
-    maxPossiblePL: 30.0,
-    balance: 12500.0,
-  },
-  {
-    id: "2",
-    symbol: "GBPUSD",
-    date: "2024-03-19",
-    account: "GOATFUNDED DEMO",
-    direction: "Short" as const,
-    status: "RUNNING" as const,
-    projectedEntry: 1.275,
-    actualEntry: 1.2745,
-    projectedSL: 1.278,
-    actualExit: 1.272,
-    actualPL: 25.0,
-    maxPossiblePL: 30.0,
-    balance: 10000.0,
-  },
-  {
-    id: "3",
-    symbol: "USDJPY",
-    date: "2024-03-18",
-    account: "FTMO CHALLENGE",
-    direction: "Long" as const,
-    status: "CLOSED" as const,
-    projectedEntry: 151.5,
-    actualEntry: 151.45,
-    projectedSL: 151.2,
-    actualExit: 151.8,
-    actualPL: 35.0,
-    maxPossiblePL: 40.0,
-    balance: 5000.0,
-  },
-  {
-    id: "4",
-    symbol: "AUDUSD",
-    date: "2024-03-17",
-    account: "MYFUNDEDFX",
-    direction: "Short" as const,
-    status: "RUNNING" as const,
-    projectedEntry: 0.655,
-    actualEntry: 0.6545,
-    projectedSL: 0.658,
-    actualExit: 0.652,
-    actualPL: 25.0,
-    maxPossiblePL: 30.0,
-    balance: 7500.0,
-  },
-  {
-    id: "5",
-    symbol: "USDCAD",
-    date: "2024-03-16",
-    account: "FTMO FUNDED",
-    direction: "Long" as const,
-    status: "CLOSED" as const,
-    projectedEntry: 1.355,
-    actualEntry: 1.3545,
-    projectedSL: 1.352,
-    actualExit: 1.357,
-    actualPL: 25.0,
-    maxPossiblePL: 30.0,
-    balance: 12500.0,
-  },
-];
+import { RecentTrade } from "@/graphql/dashboard-operations";
 
-export default function Recent() {
+export default function Recent({ trades = [] }: { trades?: RecentTrade[] }) {
   return (
     <Card className="h-full flex flex-col">
       <CardHeader className="flex flex-row items-center justify-between pb-0">
@@ -121,7 +44,7 @@ export default function Recent() {
               </TableHeader>
               <tbody aria-hidden="true" className="table-row h-1"></tbody>
               <TableBody>
-                {mockTrades.map((trade) => (
+                {trades.map((trade) => (
                   <TableRow
                     key={trade.id}
                     className="border-0 [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg h-px hover:bg-accent/50"
@@ -139,9 +62,17 @@ export default function Recent() {
                             {trade.account}
                           </span>
                           <span className="text-xs text-muted-foreground/70 truncate">
-                            {trade.actualEntry.toFixed(4)}{" "}
-                            {trade.direction === "Long" ? "→" : "←"}{" "}
-                            {trade.actualExit.toFixed(4)}
+                            {trade.actualEntry
+                              ? trade.actualEntry.toFixed(4)
+                              : "N/A"}{" "}
+                            {trade.direction === "Long"
+                              ? "→"
+                              : trade.direction === "Short"
+                              ? "←"
+                              : "-"}{" "}
+                            {trade.actualExit
+                              ? trade.actualExit.toFixed(4)
+                              : "N/A"}
                           </span>
                         </div>
                       </div>
@@ -161,13 +92,13 @@ export default function Recent() {
                         ) : (
                           <ClockIcon className="size-3" />
                         )}
-                        {trade.status === "CLOSED" ? "Closed" : "Running"}
+                        {trade.status}
                       </Badge>
                     </TableCell>
                     <TableCell className="h-[inherit] w-40 pr-4">
                       <div className="font-medium text-muted-foreground tabular-nums">
                         $
-                        {trade.balance.toLocaleString(undefined, {
+                        {trade.balance?.toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                         })}

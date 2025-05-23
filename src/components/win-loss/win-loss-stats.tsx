@@ -11,14 +11,54 @@ import {
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { RadialChart } from "./radial-chart";
 import { BarChartWL } from "./bar-chart-WL";
+import { WinLossTradeStats } from "@/graphql/dashboard-operations";
 
 type ChartType = "bar-chart" | "pie-chart";
 const chartOptions: ChartType[] = ["pie-chart", "bar-chart"];
 
-export default function WinLossState() {
+export default function WinLossState({
+  winLossStats,
+}: {
+  winLossStats?: WinLossTradeStats;
+}) {
   const id = useId();
   const [selectedValue, setSelectedValue] = useState<ChartType>("bar-chart");
   const selectedIndex = chartOptions.indexOf(selectedValue);
+
+  const {
+    wins = 0,
+    losses = 0,
+    totalTrades = 0,
+    totalRisk = 0,
+    totalReward = 0,
+  } = winLossStats || {};
+  // const chartData = [
+  //   { metric: "wins", value: 5, fill: "" },
+  //   { metric: "losses", value: 2, fill: "hsl(var(--chart-2))" },
+  //   { metric: "risk", value: 200, fill: "hsl(var(--chart-3))" },
+  //   { metric: "reward", value: 400, fill: "hsl(var(--chart-4))" },
+  //   { metric: "trades", value: 7, fill: "hsl(var(--chart-5))" },
+  // ];
+  // Chart data with renamed keys: metric & value
+  const chartData = [
+    { metric: "Risk", value: totalRisk + 1, fill: "hsl(var(--chart-1))" },
+    { metric: "Reward", value: totalReward + 1, fill: "hsl(var(--chart-2))" },
+    {
+      metric: "Total Trades",
+      value: totalTrades + 1,
+      fill: "hsl(var(--chart-3))",
+    },
+    {
+      metric: "Win Rate",
+      value: wins + 1,
+      fill: " hsl(var(--chart-4))",
+    },
+    {
+      metric: "Loss Rate",
+      value: losses + 1,
+      fill: "hsl(var(--chart-5))",
+    },
+  ];
 
   return (
     <Card className="">
@@ -46,7 +86,11 @@ export default function WinLossState() {
         </div>
       </CardHeader>
       <CardContent>
-        {selectedValue === "bar-chart" ? <BarChartWL /> : <RadialChart />}
+        {selectedValue === "bar-chart" ? (
+          <BarChartWL chartData={chartData} />
+        ) : (
+          <RadialChart chartData={chartData} />
+        )}
       </CardContent>
     </Card>
   );

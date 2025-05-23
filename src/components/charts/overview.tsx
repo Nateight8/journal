@@ -3,11 +3,11 @@
 import type React from "react";
 
 import { useId, useState } from "react";
-import { BarChart2, TrendingUp, DollarSign, Activity } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { TradingStatsGrid } from "../stats-grid";
+import { PortfolioOverview } from "@/graphql/dashboard-operations";
 
 const TIME_PERIOD_OPTIONS = ["1D", "1W", "1M", "3M", "1Y"];
 
@@ -21,43 +21,16 @@ const ViewOption = ({ id, value }: { id: string; value: string }) => {
 };
 
 type OverviewProps = {
-  data: {
-    totalTrades: number;
-    winRate: string;
-    averageRR: string;
-    totalPL: number;
-    monthlyPL: number;
-    openTrades: number;
-    bestTrade: number;
-    worstTrade: number;
-  };
+  data?: PortfolioOverview;
 };
 
 export function Overview({ data }: OverviewProps) {
   const id = useId();
+
   const [selectedValue, setSelectedValue] = useState("1M");
   const selectedIndex = TIME_PERIOD_OPTIONS.indexOf(selectedValue);
 
-  // Mock data for different time periods
-  const getPerformanceData = () => {
-    switch (selectedValue) {
-      case "1D":
-        return { value: "+0.8%", trend: "up" };
-      case "1W":
-        return { value: "+2.3%", trend: "up" };
-      case "1M":
-        return { value: "+4.2%", trend: "up" };
-      case "3M":
-        return { value: "-1.5%", trend: "down" };
-      case "1Y":
-        return { value: "+12.7%", trend: "up" };
-      default:
-        return { value: "+4.2%", trend: "up" };
-    }
-  };
-
-  const performanceData = getPerformanceData();
-  const isPositive = performanceData.trend === "up";
+  const isPositive = data && data?.pnl.value >= 0;
 
   return (
     <Card className="gap-4">
@@ -67,7 +40,8 @@ export function Overview({ data }: OverviewProps) {
             <CardTitle>Portfolio Value</CardTitle>
             <div className="font-bold text-3xl mb-1">
               <span className="text-xl text-muted-foreground">$</span>
-              {data.totalPL.toLocaleString()}
+
+              {data?.totalValue.toLocaleString()}
             </div>
             <div
               className={
@@ -76,8 +50,9 @@ export function Overview({ data }: OverviewProps) {
                   : "text-destructive text-sm font-medium"
               }
             >
-              {isPositive ? "↗" : "↘"} ${Math.abs(data.monthlyPL).toFixed(2)} (
-              {performanceData.value})
+              {isPositive ? "↗" : "↘"} $
+              {Math.abs(data?.pnl.value || 0).toFixed(2)} (
+              {isPositive ? "+" : "-"} {data?.pnl.percentage})
             </div>
           </div>
           <div className="flex w-full justify-end">
@@ -102,64 +77,13 @@ export function Overview({ data }: OverviewProps) {
         </div>
       </CardHeader>
       <CardContent>
-        <TradingStatsGrid
-          stats={[
-            {
-              title: "Win Rate",
-              value: data.winRate,
-              change: {
-                value: "+3.2%",
-                trend: "up",
-              },
-              icon: <TrendingUp size={20} />,
-              tooltip: TOOLTIPS.winRate,
-            },
-            {
-              title: "Avg. R:R",
-              value: data.averageRR,
-              change: {
-                value: "+0.22",
-                trend: "up",
-              },
-              icon: <BarChart2 size={20} />,
-              tooltip: TOOLTIPS.profitFactor,
-            },
-            {
-              title: "Open Trades",
-              value: data.openTrades.toString(),
-              change: {
-                value: "+12%",
-                trend: "up",
-              },
-              icon: <DollarSign size={20} />,
-              tooltip: TOOLTIPS.avgReturn,
-            },
-            {
-              title: "Total Trades",
-              value: data.totalTrades.toString(),
-              change: {
-                value: "-2.3%",
-                trend: "down",
-              },
-              icon: <Activity size={20} />,
-              tooltip: TOOLTIPS.maxDrawdown,
-            },
-          ]}
-          tooltip=""
-        />
+        <TradingStatsGrid stats={data?.overviewStats} />
       </CardContent>
     </Card>
   );
 }
 
 // Tooltip descriptions
-const TOOLTIPS = {
-  winRate:
-    "The percentage of trades that result in a profit. Higher is better.",
-  profitFactor:
-    "The ratio of gross profits to gross losses. A value above 1 indicates profitability.",
-  avgReturn:
-    "The average profit per winning trade. Higher values indicate more profitable trades.",
-  maxDrawdown:
-    "The largest peak-to-trough decline in portfolio value. Lower is better.",
-};
+// const TOOLTIPS = {
+
+// };
