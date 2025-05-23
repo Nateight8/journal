@@ -14,6 +14,8 @@ import { useMutation } from "@apollo/client";
 import { PersonalityForm } from "./personality-form";
 import { accountOperations } from "@/graphql/account-operations";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { CommandCenterPreview } from "./command-center";
 
 // Define the experience levels as a constant to reuse in the form
 export const experienceLevels = [
@@ -45,33 +47,8 @@ export const currencies = [
 ] as const;
 export type Currency = (typeof currencies)[number];
 
-// Define the prop firms as a constant
-export const propFirms = [
-  "ftmo",
-  "trueForex",
-  "fundedNext",
-  "theFundedTrader",
-] as const;
-export type PropFirm = (typeof propFirms)[number];
-
-// Account sizes in cents to avoid floating point precision issues
-export const accountSizes = [
-  5000, 10000, 25000, 50000, 100000, 200000,
-] as const;
-export type AccountSize = (typeof accountSizes)[number];
-
 // Define the trading session IDs as a type
 export type TradingSessionId = "asian" | "london" | "newYork";
-
-// Define the goal options as a constant
-export const goalOptions = [
-  "PROP",
-  "IMPROVE",
-  "DISCIPLINE",
-  "ANALYTICS",
-] as const;
-
-export type GoalOption = (typeof goalOptions)[number];
 
 // Main form schema
 export const FormSchema = z.object({
@@ -91,6 +68,8 @@ export const FormSchema = z.object({
   note: z.string().optional(),
 });
 
+// Get trading account data from localStorage
+
 // Infer the type from the schema
 export type PersonalityFormValues = z.infer<typeof FormSchema>;
 
@@ -106,13 +85,46 @@ export function Personality() {
     },
   }) as unknown as UseFormReturn<PersonalityFormValues>;
 
+  const [tradingAccount, setTradingAccount] = useState<{
+    size: number;
+    goal?: string;
+    broker?: string;
+    currency?: string;
+    experience?: string;
+    timestamp?: string;
+    experienceLevel?: string;
+    accountName?: string;
+    accountCurrency?: string;
+    dailyRisk?: number;
+    dailyDrawdown?: number;
+    totalDrawdown?: number;
+    riskPerTrade?: number;
+    maxOpenTrades?: number;
+  } | null>(null);
+
+  // Load trading account data on component mount
+  useEffect(() => {
+    try {
+      const savedData = localStorage.getItem("tradingAccount");
+      if (savedData) {
+        const parsedData = JSON.parse(savedData);
+        setTradingAccount(parsedData);
+      }
+    } catch (error) {
+      console.error("Error loading trading account data:", error);
+    }
+  }, []);
+
   const [step, setStep] = React.useState(1);
+
+  console.log(tradingAccount?.maxOpenTrades);
 
   const router = useRouter();
   const [createTradingPlan] = useMutation(
     accountOperations.Mutations.tradingPlan,
     {
       onCompleted: () => {
+        localStorage.removeItem("tradingAccountData");
         router.push("/dashboard");
       },
     }
@@ -132,7 +144,44 @@ export function Personality() {
     });
 
     // Save trading account data to localStorage
-    localStorage.removeItem("tradingAccountData");
+  };
+
+  type TradingStyle =
+    | "scalping"
+    | "dayTrading"
+    | "swingTrading"
+    | "positionTrading";
+
+  const getTradingStyleName = (style?: TradingStyle | string): string => {
+    if (!style) return "Not specified";
+
+    switch (style) {
+      case "scalping":
+        return "Scalping (The Sprinter)";
+      case "dayTrading":
+        return "Day Trading (The Day Warrior)";
+      case "swingTrading":
+        return "Swing Trading (The Patient Hunter)";
+      case "positionTrading":
+        return "Position Trading (The Marathon Runner)";
+      default:
+        return "Not specified";
+    }
+  };
+
+  const tradingStyleName = getTradingStyleName(form.watch("tradingStyle"));
+
+  const commandCenterValues = {
+    accountName: tradingAccount?.accountName,
+    accountSize: tradingAccount?.size,
+    maxDailyRisk: tradingAccount?.dailyRisk,
+    maxDailyDrawdown: tradingAccount?.dailyDrawdown,
+    maxTotalDrawdown: tradingAccount?.totalDrawdown,
+    riskPerTrade: tradingAccount?.riskPerTrade,
+    tradingStyle: tradingStyleName,
+    tradingSessions: form.watch("tradingSessions"),
+    riskRewardRatio: form.watch("riskRewardRatio"),
+    maxOpenTrades: tradingAccount?.maxOpenTrades,
   };
 
   return (
@@ -154,20 +203,24 @@ export function Personality() {
               <Card className="border-border bg-card/50">
                 <div className="border-b border-border p-6">
                   <h2 className="text-lg font-medium uppercase">
-                    ACCOUNT SETUP
+                    Trading Style
                   </h2>
                 </div>
                 <div className="p-6">
                   <div style={{ minHeight: "300px" }}>
                     {step === 1 && <PersonalityForm form={form} />}
-                    {/* {step === 2 && <AccountProfile form={form} />} */}
+                    {step === 2 && (
+                      <CommandCenterPreview
+                        commandCenterValues={commandCenterValues}
+                      />
+                    )}
                   </div>
                 </div>
               </Card>
 
-              {/* Right Column - Summary & Actions */}
+              {/* Right Column - Summary & Actions tradingAccount*/}
               <div className="space-y-6">
-                {/* <Card className="border-border bg-card/50">
+                <Card className="border-border bg-card/50">
                   <div className="border-b border-border p-6">
                     <h2 className="text-lg font-medium uppercase">
                       DETAILS & SUMMARY
@@ -180,53 +233,66 @@ export function Personality() {
                           Selected Goal
                         </span>
                         <span className="font-medium text-primary">
-                          {form.watch("goal") || "Not selected"}
+                          {tradingAccount?.goal || "Not selected"}
                         </span>
                       </div>
                     </div>
 
                     <>
-                      {form.watch("accountSize") ? (
+                      {tradingAccount?.size ? (
                         <div className="rounded-lg bg-muted/50 p-4">
                           <div className="flex items-center justify-between">
                             <span className="text-sm uppercase text-muted-foreground">
                               Account Size
                             </span>
                             <span className="font-medium">
-                              ${form.watch("accountSize")?.toLocaleString()}
+                              ${tradingAccount?.size.toLocaleString()}
                             </span>
                           </div>
                         </div>
                       ) : null}
                     </>
 
-                    {form.watch("experienceLevel") && (
+                    {form.watch("tradingStyle") ? (
+                      <div className="rounded-lg bg-muted/50 p-4">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm uppercase text-muted-foreground">
+                            Trading Style
+                          </span>
+                          <span className="font-medium">
+                            {tradingStyleName}
+                          </span>
+                        </div>
+                      </div>
+                    ) : null}
+
+                    {tradingAccount?.experienceLevel && (
                       <div className="rounded-lg bg-muted/50 p-4">
                         <div className="flex items-center justify-between">
                           <span className="text-sm uppercase text-muted-foreground">
                             Experience Level
                           </span>
                           <span className="font-medium capitalize">
-                            {form.watch("experienceLevel")}
+                            {tradingAccount?.experienceLevel}
                           </span>
                         </div>
                       </div>
                     )}
 
-                    {form.watch("maxDailyRisk") && (
-                    <div className="rounded-lg bg-muted/50 p-4">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm uppercase text-muted-foreground">
-                          Daily Risk
-                        </span>
-                        <span className="font-medium">
-                          {methods.watch("maxDailyRisk")}%
-                        </span>
+                    {tradingAccount?.dailyRisk && (
+                      <div className="rounded-lg bg-muted/50 p-4">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm uppercase text-muted-foreground">
+                            Daily Risk
+                          </span>
+                          <span className="font-medium">
+                            {tradingAccount?.dailyRisk}%
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
                   </div>
-                </Card> */}
+                </Card>
 
                 <Card className="border-border bg-card/50">
                   <div className="space-y-2 p-6">
@@ -278,38 +344,6 @@ export function Personality() {
                         Back
                       </button>
                     )}
-                    {/* { (
-                    // On final step, show submit button
-                    <button
-                      type="submit"
-                      disabled={isSubmitting}
-                      className={cn(
-                        "w-full rounded-md bg-primary py-4 text-center font-bold uppercase text-primary-foreground transition-all hover:bg-primary/90",
-                        isSubmitting && "opacity-50 cursor-not-allowed"
-                      )}
-                    >
-                      {isSubmitting ? "PROCESSING..." : "GET STARTED"}
-                    </button>
-                  ) : (
-                    // On other steps, show continue button
-                    <button
-                      type="button"
-                      onClick={goToNextStep}
-                      className="w-full rounded-md bg-primary py-4 text-center font-bold uppercase text-primary-foreground transition-all hover:bg-primary/90"
-                    >
-                      CONTINUE
-                    </button>
-                  )} */}
-
-                    {/* {currentStep > 0 && (
-                    <button
-                      type="button"
-                      onClick={goToPreviousStep}
-                      className="mt-3 w-full rounded-md border border-border py-2 text-center text-sm uppercase text-muted-foreground transition-all hover:border-border/80 hover:text-foreground/80"
-                    >
-                      Back
-                    </button>
-                  )} */}
                   </div>
                 </Card>
               </div>

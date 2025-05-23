@@ -1,7 +1,7 @@
 import { Inter } from "next/font/google";
-
 import "./globals.css";
 import { ApolloWrapper } from "@/components/providers/apollo-wraper";
+import { AuthProvider } from "@/contexts/auth-context";
 
 const fontSans = Inter({
   subsets: ["latin"],
@@ -16,7 +16,9 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark scheme-only-dark">
       <body className={`${fontSans.variable} font-sans antialiased`}>
-        <ApolloWrapper>{children}</ApolloWrapper>
+        <ApolloWrapper>
+          <AuthProvider>{children}</AuthProvider>
+        </ApolloWrapper>
       </body>
     </html>
   );

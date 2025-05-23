@@ -122,8 +122,6 @@ export function AccountSetup() {
   });
 
   const onSubmit = (data: OnboardingFormValues) => {
-    console.log("SUBMIT", data);
-
     // Save trading account data to localStorage
     localStorage.setItem(
       "tradingAccount",

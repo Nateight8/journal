@@ -9,16 +9,18 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { loginWithGoogle } from "@/lib/o-auth";
+import { useAuth } from "@/contexts/auth-context";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
+  const { signInWithGoogle } = useAuth();
+
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Form submitted!");
-    loginWithGoogle();
+
+    signInWithGoogle();
   };
 
   return (

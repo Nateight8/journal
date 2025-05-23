@@ -69,6 +69,11 @@ export function SafetyNet() {
     experienceLevel?: string;
     accountName?: string;
     accountCurrency?: string;
+    dailyRisk?: number;
+    dailyDrawdown?: number;
+    totalDrawdown?: number;
+    riskPerTrade?: number;
+    maxOpenTrades?: number;
   } | null>(null);
 
   // Load trading account data on component mount
@@ -85,6 +90,18 @@ export function SafetyNet() {
   }, []);
 
   const onSubmit = (data: SafetyFormData) => {
+    localStorage.setItem(
+      "tradingAccount",
+      JSON.stringify({
+        ...tradingAccount,
+        dailyRisk: data.maxDailyRisk,
+        dailyDrawdown: data.maxDailyDrawdown,
+        totalDrawdown: data.maxTotalDrawdown,
+        riskPerTrade: data.riskPerTrade,
+        maxOpenTrades: data.maxOpenTrades,
+      })
+    );
+
     createSafetyNet({
       variables: {
         input: {
@@ -115,9 +132,7 @@ export function SafetyNet() {
               {/* Left Column - Main Content */}
               <Card className="border-border bg-card/50">
                 <div className="border-b border-border p-6">
-                  <h2 className="text-lg font-medium uppercase">
-                    REALITY CHECK
-                  </h2>
+                  <h2 className="text-lg font-medium uppercase">Safety Net</h2>
                 </div>
                 <div className="p-6">
                   <div style={{ minHeight: "300px" }}>
