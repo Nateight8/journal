@@ -1,19 +1,18 @@
 "use client";
 
 import * as React from "react";
+import { useMutation } from "@apollo/client";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import * as z from "zod";
 import { cn } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
-import { useApolloClient } from "@apollo/client";
 
 import { Form } from "@/components/ui/form";
+import { accountOperations } from "@/graphql/account-operations";
+import { useAuth } from "@/contexts/auth-context";
 import { AccountProfile } from "./account-profile";
 import { GoalSetting } from "./goal-setting";
-import { accountOperations } from "@/graphql/account-operations";
-import { useMutation } from "@apollo/client";
-import userOperations from "@/graphql/user-operations";
 
 // Define the experience levels as a constant to reuse in the form
 export const experienceLevels = [
@@ -110,27 +109,12 @@ export function AccountSetup() {
   });
 
   const [step, setStep] = React.useState(1);
-  const client = useApolloClient();
+  const { refetchUser } = useAuth();
   const [setUpAccount] = useMutation(accountOperations.Mutations.setUpAccount, {
     onCompleted: async () => {
       try {
-        // Force a network request to get the latest user data
-        const { data } = await client.query({
-          query: userOperations.Queries.me,
-          fetchPolicy: "network-only",
-        });
-
-        // If we have the me data, update the cache
-        if (data?.me) {
-          client.cache.modify({
-            fields: {
-              me: () => ({
-                ...data.me,
-                __typename: "User",
-              }),
-            },
-          });
-        }
+        // This will update the user data in the auth context
+        await refetchUser();
       } catch (error) {
         console.error("Error refetching user data:", error);
       }

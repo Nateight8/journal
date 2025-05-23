@@ -18,6 +18,7 @@ type AuthContextType = {
   loading: boolean;
   signOut: () => Promise<void>;
   refetchUser: () => Promise<void>;
+  signInWithGoogle: () => void;
 };
 
 // Create Context with default undefined
@@ -79,12 +80,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  function signInWithGoogle() {
+    window.location.href = "http://localhost:4000/api/auth/google";
+  }
+
   // Provide context value
   const value: AuthContextType = {
     user,
     loading,
     signOut,
     refetchUser,
+    signInWithGoogle,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

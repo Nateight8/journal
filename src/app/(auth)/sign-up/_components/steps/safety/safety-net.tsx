@@ -20,7 +20,7 @@ import {
 import { Info } from "lucide-react";
 import { useMutation } from "@apollo/client";
 import { accountOperations } from "@/graphql/account-operations";
-import userOperations from "@/graphql/user-operations";
+import { useAuth } from "@/contexts/auth-context";
 
 // Main form schema
 export const FormSchema = z.object({
@@ -47,11 +47,12 @@ export function SafetyNet() {
   });
 
   const [step, setStep] = useState(1);
+  const { refetchUser } = useAuth();
   const [createSafetyNet] = useMutation(accountOperations.Mutations.safetyNet, {
-    refetchQueries: [userOperations.Queries.me],
     onCompleted: () => {
       // This will trigger a refetch of the me query
       // which will update the onboarding step in the UI
+      refetchUser();
     },
   });
 
