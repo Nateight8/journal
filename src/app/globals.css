@@ -160,3 +160,234 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* TipTap Editor Styles - ShadCN/UI Integration */
+.editor-content {
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    "Noto Sans", sans-serif;
+  line-height: 1.6;
+  color: hsl(var(--muted-foreground));
+}
+
+.editor-content .ProseMirror {
+  outline: none;
+  padding: 0;
+}
+
+.editor-content .ProseMirror p.is-editor-empty:first-child::before {
+  color: hsl(var(--muted-foreground));
+  content: "Start documenting your trade...";
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+.editor-content .editor-heading {
+  font-weight: 600;
+  line-height: 1.2;
+  margin: 2rem 0 1rem 0;
+  color: hsl(var(--foreground));
+}
+
+.editor-content h1.editor-heading {
+  font-size: 1.875rem; /* text-3xl */
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+}
+
+.editor-content h2.editor-heading {
+  font-size: 1.25rem; /* text-xl */
+  font-weight: 600;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+.editor-content h3.editor-heading {
+  font-size: 1.125rem; /* text-lg */
+  font-weight: 500;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.editor-content .editor-paragraph {
+  font-size: 1rem;
+  line-height: 1.625;
+  margin: 1rem 0;
+  color: hsl(var(--muted-foreground));
+}
+
+.editor-content .editor-paragraph:first-child {
+  margin-top: 0;
+}
+
+.editor-content .editor-paragraph:last-child {
+  margin-bottom: 0;
+}
+
+.editor-content .editor-bold {
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
+
+.editor-content .editor-italic {
+  font-style: italic;
+}
+
+.editor-content .editor-strike {
+  text-decoration: line-through;
+  text-decoration-color: hsl(var(--muted-foreground));
+}
+
+/* List Styles */
+.editor-content ul:not([data-type="taskList"]) {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin: 1rem 0;
+}
+
+.editor-content ul:not([data-type="taskList"]) li {
+  margin: 0.5rem 0;
+  padding-left: 0.25rem;
+}
+
+/* Task List Styles - ShadCN/UI Integration */
+.editor-content .editor-task-list {
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0;
+}
+
+.editor-content .editor-task-item {
+  display: flex;
+  align-items: flex-start;
+  margin: 0.75rem 0;
+  padding: 0;
+}
+
+.editor-content .editor-task-item > label {
+  flex: 0 0 auto;
+  margin-right: 0.75rem;
+  margin-top: 0.125rem;
+  user-select: none;
+}
+
+.editor-content .editor-task-item > label input[type="checkbox"] {
+  appearance: none;
+  width: 1rem;
+  height: 1rem;
+  border: 1px solid hsl(var(--border));
+  border-radius: calc(var(--radius) - 2px);
+  background: hsl(var(--background));
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.editor-content .editor-task-item > label input[type="checkbox"]:checked {
+  background: hsl(var(--primary));
+  border-color: hsl(var(--primary));
+}
+
+.editor-content .editor-task-item > label input[type="checkbox"]:checked::after {
+  content: "✓";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: hsl(var(--primary-foreground));
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
+.editor-content .editor-task-item > label input[type="checkbox"]:hover {
+  border-color: hsl(var(--ring));
+}
+
+.editor-content .editor-task-item > label input[type="checkbox"]:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+
+.editor-content .editor-task-item > div {
+  flex: 1;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: hsl(var(--muted-foreground));
+}
+
+.editor-content .editor-task-item[data-checked="true"] > div {
+  text-decoration: line-through;
+  color: hsl(var(--muted-foreground));
+}
+
+/* Text Alignment */
+.editor-content [data-text-align="left"] {
+  text-align: left;
+}
+
+.editor-content [data-text-align="center"] {
+  text-align: center;
+}
+
+.editor-content [data-text-align="right"] {
+  text-align: right;
+}
+
+/* Placeholder Styling for Journal */
+.editor-content p.placeholder,
+.editor-content p[data-placeholder] {
+  color: hsl(var(--muted-foreground));
+  font-style: italic;
+}
+
+.editor-content li.placeholder,
+.editor-content li[data-placeholder] {
+  color: hsl(var(--muted-foreground));
+  font-style: italic;
+}
+
+/* Selection styles */
+.editor-content .ProseMirror ::selection {
+  background: hsl(var(--foreground));
+  color: hsl(var(--background));
+  -webkit-text-fill-color: hsl(var(--background));
+}
+
+/* Focus styles */
+.editor-content .ProseMirror:focus {
+  outline: none;
+}
+
+/* Horizontal Rule */
+.editor-content hr {
+  border: none;
+  border-top: 1px solid hsl(var(--border));
+  margin: 2rem 0;
+}
+
+/* Smooth transitions */
+.editor-content * {
+  transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .editor-content h1.editor-heading {
+    font-size: 1.5rem; /* text-2xl */
+  }
+
+  .editor-content h2.editor-heading {
+    font-size: 1.125rem; /* text-lg */
+  }
+
+  .editor-content h3.editor-heading {
+    font-size: 1rem; /* text-base */
+  }
+
+  .editor-content .editor-paragraph,
+  .editor-content .editor-task-item > div {
+    font-size: 0.875rem; /* text-sm */
+  }
+}

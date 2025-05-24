@@ -15,7 +15,7 @@ export function OverviewCarrousel() {
             key={index}
             className="pl-1 md:basis-1/2 lg:basis-1/3  "
           >
-            <div className="p-1">//</div>
+            <div className="p-1">{/* Comment moved inside braces */}</div>
           </CarouselItem>
         ))}
       </CarouselContent>

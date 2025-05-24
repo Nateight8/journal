@@ -127,12 +127,10 @@ export function SymbolAnalyticsChart({ data }: { data: SymbolAnalytic }) {
             />
             {/* P&L Area */}
             <Area
-              type="linear"
+              type="monotone"
               dataKey="cumulativePnl"
               stroke={chartColor}
               strokeWidth={2}
-              strokeLinecap="square"
-              strokeLinejoin="miter"
               fillOpacity={1}
               fill={`url(#${gradientId})`}
               activeDot={{
@@ -141,8 +139,6 @@ export function SymbolAnalyticsChart({ data }: { data: SymbolAnalytic }) {
                 fill: "hsl(var(--background))",
                 stroke: chartColor,
               }}
-              connectNulls={true}
-              isAnimationActive={false}
             />
             <ChartTooltip
               content={({ active, payload }) => {

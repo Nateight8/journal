@@ -74,7 +74,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(null);
 
       // Redirect to sign-in page
-      router.push("/sign-in");
+      router.push("/authenticate");
     } catch (error) {
       console.error("Error during sign out:", error);
     }

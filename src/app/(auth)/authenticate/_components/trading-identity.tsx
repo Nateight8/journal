@@ -16,13 +16,68 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 
+interface OnboardingFormValues {
+  isPropFirmSelected: boolean;
+  selectedPropFirm: string;
+  selectedAccountSize: string;
+  tradingExperience: string;
+  biggestChallenge: string[];
+  accountName: string;
+  broker: string;
+  accountSize: string;
+  accountCurrency: string;
+  propFirm: string;
+  experienceLevel: string;
+}
+
 type AccountSize = {
   value: number;
   label: string;
   popular?: boolean;
 };
 
+const FormError = ({ message }: { message: string }) => (
+  <p className="text-sm font-medium text-destructive">{message}</p>
+);
+
 export function TradingIdentity() {
+  const {
+    register,
+    formState: { errors },
+    watch,
+    setValue,
+  } = useFormContext<OnboardingFormValues>();
+  const isPropFirmSelected = watch("isPropFirmSelected") ?? false;
+  const selectedPropFirm = watch("selectedPropFirm") ?? "";
+  const selectedAccountSize = watch("selectedAccountSize") ?? "";
+  const tradingExperience = watch("tradingExperience") ?? "";
+  const biggestChallenge = watch("biggestChallenge") ?? [];
+  const accountCurrency = watch("accountCurrency") ?? "";
+
+  const handleSelectPropFirm = (firm: string) => {
+    setValue("selectedPropFirm", firm);
+    setValue("isPropFirmSelected", true);
+    setValue("propFirm", firm);
+  };
+
+  const handleSelectAccountSize = (size: string) => {
+    setValue("selectedAccountSize", size);
+    setValue("accountSize", size);
+  };
+
+  const handleSelectExperience = (experience: string) => {
+    setValue("tradingExperience", experience);
+    setValue("experienceLevel", experience);
+  };
+
+  const handleToggleChallenge = (challenge: string) => {
+    const currentChallenges = biggestChallenge;
+    const newChallenges = currentChallenges.includes(challenge)
+      ? currentChallenges.filter((c) => c !== challenge)
+      : [...currentChallenges, challenge];
+    setValue("biggestChallenge", newChallenges);
+  };
+
   const propFirms = [
     { id: "ftmo", name: "FTMO", logo: "FTMO" },
     { id: "trueForex", name: "TRUE FOREX", logo: "TF" },
@@ -49,17 +104,6 @@ export function TradingIdentity() {
     { value: "riskManagement", label: "Risk Management" },
     { value: "consistency", label: "Consistency" },
     { value: "emotions", label: "Emotional Control" },
-  ] as const;
-
-  const currencies = [
-    { value: "USD", label: "US Dollar (USD)" },
-    { value: "EUR", label: "Euro (EUR)" },
-    { value: "GBP", label: "British Pound (GBP)" },
-    { value: "JPY", label: "Japanese Yen (JPY)" },
-    { value: "AUD", label: "Australian Dollar (AUD)" },
-    { value: "CAD", label: "Canadian Dollar (CAD)" },
-    { value: "CHF", label: "Swiss Franc (CHF)" },
-    { value: "NZD", label: "New Zealand Dollar (NZD)" },
   ] as const;
 
   return (
@@ -115,11 +159,11 @@ export function TradingIdentity() {
                 type="button"
                 className={cn(
                   "flex h-16 w-full flex-col items-center justify-center rounded-md border border-border bg-secondary/50 transition-all hover:border-primary/50",
-                  selectedAccountSize === size.value &&
+                  selectedAccountSize === size.value.toString() &&
                     "border-2 border-primary",
                   size.popular && "border-primary/30"
                 )}
-                onClick={() => handleSelectAccountSize(size.value)}
+                onClick={() => handleSelectAccountSize(size.value.toString())}
               >
                 <DollarSign className="h-4 w-4 text-primary" />
                 <span className="text-sm font-medium">{size.label}</span>
@@ -128,7 +172,9 @@ export function TradingIdentity() {
           ))}
         </div>
         {errors.accountSize && (
-          <FormError message={errors.accountSize.message} />
+          <FormError
+            message={errors.accountSize?.message ?? "Account size is required"}
+          />
         )}
       </div>
 
@@ -139,12 +185,8 @@ export function TradingIdentity() {
               Experience Level
             </Label>
             <RadioGroup
-              onValueChange={(value) =>
-                handleSelectExperience(
-                  value as OnboardingFormValues["experienceLevel"]
-                )
-              }
-              value={selectedExperience}
+              value={tradingExperience}
+              onValueChange={handleSelectExperience}
               className="space-y-2"
             >
               {experienceLevels.map((level) => (
@@ -152,7 +194,7 @@ export function TradingIdentity() {
                   key={level.value}
                   className={cn(
                     "flex items-center rounded-md border border-border bg-secondary/50 p-3 transition-all",
-                    selectedExperience === level.value && "border-primary"
+                    tradingExperience === level.value && "border-primary"
                   )}
                 >
                   <RadioGroupItem
@@ -178,20 +220,18 @@ export function TradingIdentity() {
                   key={challenge.value}
                   className={cn(
                     "flex items-center rounded-md border border-border bg-secondary/50 p-3 transition-all",
-                    selectedChallenges.includes(
+                    biggestChallenge.includes(
                       challenge.value as OnboardingFormValues["biggestChallenge"][number]
                     ) && "border-primary"
                   )}
                 >
                   <Checkbox
                     id={challenge.value}
-                    checked={selectedChallenges.includes(
+                    checked={biggestChallenge.includes(
                       challenge.value as OnboardingFormValues["biggestChallenge"][number]
                     )}
                     onCheckedChange={() =>
-                      handleToggleChallenge(
-                        challenge.value as OnboardingFormValues["biggestChallenge"][number]
-                      )
+                      handleToggleChallenge(challenge.value)
                     }
                     className="border-muted text-primary"
                   />
@@ -208,87 +248,65 @@ export function TradingIdentity() {
         </>
       )}
 
-      <div className="space-y-3">
-        <Label
-          htmlFor="accountName"
-          className="text-sm uppercase text-muted-foreground"
-        >
-          Account Name
-        </Label>
-        <Input
-          id="accountName"
-          placeholder={
-            isPropFirmSelected ? "My FTMO Challenge" : "My Trading Account"
-          }
-          {...register("accountName")}
-          className={cn(
-            "rounded-md border-border bg-secondary/50 text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary",
-            errors.accountName &&
-              "border-red-500 focus:border-red-500 focus:ring-red-500"
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="accountName">Account Name</Label>
+          <Input
+            id="accountName"
+            {...register("accountName")}
+            placeholder={
+              isPropFirmSelected ? "My FTMO Challenge" : "My Trading Account"
+            }
+          />
+          {errors.accountName && (
+            <FormError
+              message={
+                errors.accountName?.message ?? "Account name is required"
+              }
+            />
           )}
-        />
-        {errors.accountName && (
-          <FormError message={errors.accountName.message} />
-        )}
-      </div>
+        </div>
 
-      <div className="space-y-3">
-        <Label
-          htmlFor="broker"
-          className="text-sm uppercase text-muted-foreground"
-        >
-          Broker
-        </Label>
-        <Input
-          id="broker"
-          placeholder={isPropFirmSelected ? "e.g., FTMO" : "e.g., IC Markets"}
-          {...register("broker")}
-          className={cn(
-            "rounded-md border-border bg-secondary/50 text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary",
-            errors.broker &&
-              "border-red-500 focus:border-red-500 focus:ring-red-500"
+        <div className="space-y-2">
+          <Label htmlFor="broker">Broker</Label>
+          <Input
+            id="broker"
+            {...register("broker")}
+            placeholder={isPropFirmSelected ? "e.g., FTMO" : "e.g., IC Markets"}
+          />
+          {errors.broker && (
+            <FormError
+              message={errors.broker?.message ?? "Broker is required"}
+            />
           )}
-        />
-        {errors.broker && <FormError message={errors.broker.message} />}
-      </div>
+        </div>
 
-      <div className="space-y-3">
-        <Label
-          htmlFor="accountCurrency"
-          className="text-sm uppercase text-muted-foreground"
-        >
-          Currency
-        </Label>
-        <Select
-          onValueChange={(value) =>
-            setValue("accountCurrency", value, { shouldValidate: true })
-          }
-          defaultValue="USD"
-        >
-          <SelectTrigger
-            className={cn(
-              "rounded-md border-border bg-secondary/50 text-foreground focus:border-primary focus:ring-primary",
-              errors.accountCurrency &&
-                "border-red-500 focus:border-red-500 focus:ring-red-500"
-            )}
+        <div className="space-y-2">
+          <Label htmlFor="accountCurrency">Account Currency</Label>
+          <Select
+            value={accountCurrency}
+            onValueChange={(value) => setValue("accountCurrency", value)}
           >
-            <SelectValue placeholder="Select currency" />
-          </SelectTrigger>
-          <SelectContent className="rounded-md border-border bg-card text-foreground">
-            {currencies.map((currency) => (
-              <SelectItem key={currency.value} value={currency.value}>
-                {currency.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        {errors.accountCurrency && (
-          <FormError message={errors.accountCurrency.message} />
-        )}
+            <SelectTrigger>
+              <SelectValue placeholder="Select currency" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="USD">USD</SelectItem>
+              <SelectItem value="EUR">EUR</SelectItem>
+              <SelectItem value="GBP">GBP</SelectItem>
+            </SelectContent>
+          </Select>
+          {errors.accountCurrency && (
+            <FormError
+              message={
+                errors.accountCurrency?.message ?? "Currency is required"
+              }
+            />
+          )}
+        </div>
       </div>
 
       <input type="hidden" {...register("propFirm")} />
-      <input type="hidden" {...register("accountSize")} />
       <input type="hidden" {...register("experienceLevel")} />
       <input type="hidden" {...register("biggestChallenge")} />
     </div>

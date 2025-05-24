@@ -5,8 +5,9 @@ import {
   CarouselContent,
   CarouselItem,
 } from "@/components/ui/carousel";
-import { SymbolAnalyticsChart } from "./symbol-analytics";
+// import { SymbolAnalyticsChart } from "./symbol-analytics";
 import { SymbolAnalytic } from "@/graphql/trade-analytics";
+import { SymbolAnalyticsChart } from "./symbol-analytics";
 
 export function PerformanceCarrousel({
   data = [],
