@@ -17,8 +17,9 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { cn } from "@/lib/utils";
 import { NumberField } from "@/components/ui/number-field";
 import { Textarea } from "@/components/ui/textarea";
-import { useMutation } from "@apollo/client";
+import { useApolloClient, useMutation } from "@apollo/client";
 import journalOperations from "@/graphql/journal-operationsl";
+import { useLogDialog } from "./log-dialog-context";
 
 export const TargetSchema = z.object({
   label: z.string().min(1, { message: "Label is required" }),
@@ -107,7 +108,21 @@ export function LogTrade({ selectedAccountIds }: LogTradeProps) {
     },
   });
 
-  const [createTrade] = useMutation(journalOperations.Mutations.createJournal);
+  const client = useApolloClient();
+  const { closeDialog } = useLogDialog();
+
+  const [createTrade] = useMutation(journalOperations.Mutations.createJournal, {
+    onCompleted: () => {
+      // Close the dialog
+      form.reset();
+      // Invalidate and refetch the journals query
+      client.refetchQueries({
+        include: [journalOperations.Queries.getJournals],
+      });
+      // Close the dialog using context
+      closeDialog();
+    },
+  });
 
   function onSubmit(data: LogFormValues) {
     createTrade({
@@ -128,7 +143,6 @@ export function LogTrade({ selectedAccountIds }: LogTradeProps) {
         },
       },
     });
-    console.log({ ...data, accountIds: selectedAccountIds });
   }
 
   //   const limitOrder = executionStyle === "on";

@@ -1,11 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { cn } from "@/lib/utils";
-
 import LogTrade from "@/components/trades/log/log-trade";
+import { LogDialogProvider } from "./log-dialog-context";
 
 function DialogContent({
   className,
@@ -29,14 +30,22 @@ function DialogContent({
 }
 
 export default function LogDialog() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleClose = () => {
+    setIsOpen(false);
+  };
+
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="outline">Journal</Button>
-      </DialogTrigger>
-      <DialogContent className=" md:max-w-sm px-2 py-4">
-        <LogTrade />
-      </DialogContent>
-    </Dialog>
+    <LogDialogProvider onClose={handleClose}>
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogTrigger asChild>
+          <Button variant="outline">Journal</Button>
+        </DialogTrigger>
+        <DialogContent className="md:max-w-sm px-2 py-4">
+          <LogTrade />
+        </DialogContent>
+      </Dialog>
+    </LogDialogProvider>
   );
 }
