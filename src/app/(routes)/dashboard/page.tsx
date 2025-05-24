@@ -1,18 +1,19 @@
 "use client";
 
-import { mockData } from "@/lib/mock-data";
+// import { mockData } from "@/lib/mock-data";
 
 import { Overview } from "@/components/charts/overview";
 import Recent from "@/components/trades/recent";
-import { Performance } from "@/components/trades/performance";
+// import { Performance } from "@/components/trades/performance";
 // import { WinLossMeter } from "@/components/win-loss/radial-chart";
-import HeatMap from "@/components/charts/heat-map";
-import WinLossState from "@/components/win-loss/win-loss-stats";
+// import HeatMap from "@/components/charts/heat-map";
+// import WinLossState from "@/components/win-loss/win-loss-stats";
 import { useAuth } from "@/contexts/auth-context";
 import { useQuery } from "@apollo/client";
 import dashboardOperations, {
   DashboardData,
 } from "@/graphql/dashboard-operations";
+import WorkInProgress from "@/components/wip";
 
 export default function Page() {
   const { user } = useAuth();
@@ -37,7 +38,13 @@ export default function Page() {
       <Overview data={data?.dashboard.portfolioOverview} />
 
       <div className="md:grid hidden  md:grid-cols-2 gap-4 w-full">
-        <Performance data={mockData.performance.metrics} />
+        {/* <Performance data={mockData.performance.metrics} /> */}
+        <WorkInProgress
+          variant="compact"
+          title="Trader's Performance (Coming Soon)"
+          description="View your recent trades and see how they're performing."
+          progress={35}
+        />
 
         <Recent trades={data?.dashboard.recentTrades || []} />
       </div>
@@ -50,10 +57,22 @@ export default function Page() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="h-full">
-          <WinLossState winLossStats={data?.dashboard.winLossTradeStats} />
+          <WorkInProgress
+            variant="compact"
+            title="PNL Stats (Coming Soon)"
+            description="View your PNL stats and see how they're performing."
+            progress={15}
+          />
+          {/* <WinLossState winLossStats={data?.dashboard.winLossTradeStats} /> */}
         </div>
         <div className="h-full">
-          <HeatMap />
+          {/* <HeatMap /> */}
+          <WorkInProgress
+            variant="compact"
+            title="Heat map (Coming Soon)"
+            description="View your heat map and see how they're performing."
+            progress={15}
+          />
         </div>
       </div>
 

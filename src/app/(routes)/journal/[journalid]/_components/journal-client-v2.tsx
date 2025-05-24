@@ -48,6 +48,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import journalOperations from "@/graphql/journal-operationsl";
 import { useMutation } from "@apollo/client";
+import WorkInProgress from "@/components/wip";
 
 export default function EnhancedTradeJournal({
   journalId,
@@ -606,7 +607,7 @@ export default function EnhancedTradeJournal({
               ) : (
                 <div className="p-4 space-y-4 h-full overflow-y-auto">
                   {/* Trade Summary Card */}
-                  <Card className="border">
+                  {/* <Card className="border">
                     <CardHeader className="pb-3">
                       <CardTitle className="text-lg flex items-center justify-between">
                         <span>Position Summary</span>
@@ -656,10 +657,10 @@ export default function EnhancedTradeJournal({
                         </div>
                       </div>
                     </CardContent>
-                  </Card>
+                  </Card> */}
 
                   {/* Trade Entries */}
-                  <Card className="border">
+                  {/* <Card className="border">
                     <CardHeader className="pb-3">
                       <CardTitle className="text-lg flex items-center">
                         <BarChart3 className="w-5 h-5 mr-2" />
@@ -698,7 +699,11 @@ export default function EnhancedTradeJournal({
                         </div>
                       ))}
                     </CardContent>
-                  </Card>
+                  </Card> */}
+                  <WorkInProgress
+                    variant="compact"
+                    title="Show Logged Trade Data"
+                  />
                 </div>
               )}
             </div>
