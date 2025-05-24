@@ -251,7 +251,7 @@ export default function JournalEditor({
       editor.commands.setContent(initialContent || forexJournalTemplate);
       initialContentRef.current = initialContent || forexJournalTemplate;
     }
-  }, [editor, initialContent]);
+  }, [editor, initialContent, forexJournalTemplate]);
 
   // Expose resetChangeTracking method via ref if needed
   useEffect(() => {
@@ -271,7 +271,7 @@ export default function JournalEditor({
     return () => {
       // No need to delete the method as it will be garbage collected
     };
-  }, [editor, onContentChange]);
+  }, [editor, onContentChange, forexJournalTemplate]);
 
   const toggleHeading = (level: 1 | 2 | 3) => {
     if (!editor) return;

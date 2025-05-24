@@ -20,7 +20,6 @@ export default function Page() {
   const { data } = useQuery<DashboardData>(
     dashboardOperations.Queries.dashboardData
   );
-  console.table("recent trades", data?.dashboard.recentTrades);
 
   // data?.dashboard.tradePerformance <==winLossState
   return (

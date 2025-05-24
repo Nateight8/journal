@@ -1,13 +1,10 @@
 import TradeJournalEntry from "./_components/journal-client-v2";
 
-interface PageProps {
-  params: {
-    journalid: string;
-  };
-}
-
-export default function Page({ params }: PageProps) {
-  const { journalid } = params;
-
-  return <TradeJournalEntry journalId={journalid} />;
+export default async function JournalPage({
+  params,
+}: {
+  params: Promise<{ journalid: string }>;
+}) {
+  const resolvedParams = await params;
+  return <TradeJournalEntry journalId={resolvedParams.journalid} />;
 }

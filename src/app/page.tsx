@@ -121,7 +121,7 @@ export default function Page() {
       clearInterval(featureInterval);
       clearInterval(testimonialInterval);
     };
-  }, []);
+  }, [features.length, testimonials.length]);
 
   return (
     <div className="min-h-screen bg-background">

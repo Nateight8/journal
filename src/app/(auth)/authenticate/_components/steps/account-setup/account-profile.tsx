@@ -22,7 +22,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 import { UseFormReturn } from "react-hook-form";
-import { OnboardingFormValues } from "./account-setup";
+import { OnboardingFormValues } from "../../onboard";
 
 type AccountSize = {
   value: number;
@@ -35,10 +35,10 @@ export function AccountProfile({
 }: {
   form: UseFormReturn<OnboardingFormValues>;
 }) {
-  const goal = form.watch("goal");
-  const isPropFirmSelected = goal === "PROP";
+  const goals = form.watch("goals");
+  const isPropFirmSelected = goals?.includes("PROP");
 
-  console.log("FORM", form.watch("goal"));
+  console.log("FORM", goals);
   const { control } = form;
 
   const propFirms = [
@@ -58,16 +58,15 @@ export function AccountProfile({
   ] as const;
 
   const experienceLevels = [
-    { value: "BEGINNER", label: "BEGINNER (< 1 YEAR)" },
-    { value: "INTERMEDIATE", label: "INTERMEDIATE (1-2 YEARS)" },
-    { value: "ADVANCED", label: "ADVANCED (3+ YEARS)" },
+    { value: "beginner", label: "BEGINNER (< 1 YEAR)" },
+    { value: "intermediate", label: "INTERMEDIATE (1-2 YEARS)" },
+    { value: "advanced", label: "ADVANCED (3+ YEARS)" },
   ] as const;
 
   const challenges = [
-    { value: "RISK_MANAGEMENT", label: "RISK MANAGEMENT" },
-    { value: "CONSISTENCY", label: "CONSISTENCY" },
-    { value: "PSYCHOLOGY", label: "PSYCHOLOGY" },
-    { value: "PATIENCE", label: "PATIENCE" },
+    { value: "riskManagement", label: "RISK MANAGEMENT" },
+    { value: "consistency", label: "CONSISTENCY" },
+    { value: "emotions", label: "EMOTIONAL CONTROL" },
   ] as const;
 
   const currencies = [

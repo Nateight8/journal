@@ -92,7 +92,7 @@ import { Label } from "@/components/ui/label";
 import { Calendar } from "@/components/ui/calendar";
 import { DateRange } from "react-day-picker";
 import { createPortal } from "react-dom";
-import LogDialog from "./log/log-dialog";
+import LogDialog from "@/components/trades/log/log-dialog";
 
 export type Trade = {
   id: string;

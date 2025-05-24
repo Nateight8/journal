@@ -16,18 +16,17 @@ import { GoalSetting } from "./goal-setting";
 
 // Define the experience levels as a constant to reuse in the form
 export const experienceLevels = [
-  "BEGINNER",
-  "INTERMEDIATE",
-  "ADVANCED",
+  "beginner",
+  "intermediate",
+  "advanced",
 ] as const;
 export type ExperienceLevel = (typeof experienceLevels)[number];
 
 // Define the challenges as a constant
 export const challenges = [
-  "RISK_MANAGEMENT",
-  "CONSISTENCY",
-  "PSYCHOLOGY",
-  "PATIENCE",
+  "riskManagement",
+  "consistency",
+  "emotions",
 ] as const;
 export type Challenge = (typeof challenges)[number];
 
@@ -72,7 +71,7 @@ export type GoalOption = (typeof goalOptions)[number];
 // Main form schema
 export const FormSchema = z.object({
   // From AccountSetup
-  goal: z.enum(goalOptions),
+  goals: z.array(z.enum(goalOptions)).min(1, "Please select at least one goal"),
 
   // From AccountProfile
   propFirm: z.enum(propFirms).optional(),
@@ -97,9 +96,9 @@ export function AccountSetup() {
   const form = useForm<OnboardingFormValues>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      goal: undefined,
+      goals: [],
       propFirm: undefined,
-      accountSize: 0,
+      accountSize: undefined,
       experienceLevel: undefined,
       biggestChallenge: [],
       accountName: "",
@@ -127,7 +126,7 @@ export function AccountSetup() {
       "tradingAccount",
       JSON.stringify({
         size: data.accountSize,
-        goal: data.goal,
+        goals: data.goals,
         experienceLevel: data.experienceLevel,
         biggestChallenge: data.biggestChallenge,
         accountName: data.accountName,
@@ -187,10 +186,10 @@ export function AccountSetup() {
                     <div className="rounded-lg bg-primary/10 p-4">
                       <div className="flex items-center justify-between">
                         <span className="text-sm uppercase text-muted-foreground">
-                          Selected Goal
+                          Selected Goals
                         </span>
                         <span className="font-medium text-primary">
-                          {form.watch("goal") || "Not selected"}
+                          {form.watch("goals")?.join(", ") || "Not selected"}
                         </span>
                       </div>
                     </div>

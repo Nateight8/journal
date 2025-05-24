@@ -7,12 +7,9 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-
 import { Label } from "@/components/ui/label";
-
 import { type UseFormReturn } from "react-hook-form";
-import { type OnboardingFormValues } from "./account-setup";
+import { type OnboardingFormValues, type GoalOption } from "../../onboard";
 
 export function GoalSetting({
   form,
@@ -21,32 +18,32 @@ export function GoalSetting({
 }) {
   const options = [
     {
-      id: "PROP",
+      id: "PROP" as GoalOption,
       icon: Trophy,
       title: "PROP FIRM CHALLENGE",
       description:
         "Get ready to pass your prop firm evaluation with disciplined trading",
     },
     {
-      id: "IMPROVE",
+      id: "IMPROVE" as GoalOption,
       icon: LineChart,
       title: "IMPROVING EXISTING TRADING",
       description:
         "Take your trading to the next level with advanced analytics",
     },
     {
-      id: "DISCIPLINE",
+      id: "DISCIPLINE" as GoalOption,
       icon: Shield,
       title: "NEED TRADING DISCIPLINE",
       description: "Tired of blown accounts? Build a systematic approach",
     },
     {
-      id: "ANALYTICS",
+      id: "ANALYTICS" as GoalOption,
       icon: BookOpen,
       title: "BETTER TRADE ANALYTICS",
       description: "Gain insights into your trading patterns and performance",
     },
-  ];
+  ] as const;
 
   return (
     <div className="space-y-6">
@@ -61,15 +58,11 @@ export function GoalSetting({
 
       <FormField
         control={form.control}
-        name="goal"
+        name="goals"
         render={({ field }) => (
           <FormItem className="space-y-3">
             <FormControl>
-              <RadioGroup
-                onValueChange={field.onChange}
-                value={field.value || ""}
-                className="flex flex-col space-y-3"
-              >
+              <div className="flex flex-col space-y-3">
                 {options.map((option) => {
                   const Icon = option.icon;
                   return (
@@ -89,17 +82,33 @@ export function GoalSetting({
                             {option.description}
                           </p>
                         </div>
-                        <RadioGroupItem
-                          value={option.id}
+                        <input
+                          type="checkbox"
                           id={option.id}
-                          checked={field.value === option.id}
+                          checked={field.value?.includes(option.id)}
+                          onChange={(e) => {
+                            const currentGoals = field.value || [];
+                            if (e.target.checked) {
+                              field.onChange([
+                                ...currentGoals,
+                                option.id as GoalOption,
+                              ]);
+                            } else {
+                              field.onChange(
+                                currentGoals.filter(
+                                  (goal: GoalOption) => goal !== option.id
+                                )
+                              );
+                            }
+                          }}
+                          className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
                           aria-describedby={`${option.id}-description`}
                         />
                       </Label>
                     </FormItem>
                   );
                 })}
-              </RadioGroup>
+              </div>
             </FormControl>
             <FormMessage />
           </FormItem>
