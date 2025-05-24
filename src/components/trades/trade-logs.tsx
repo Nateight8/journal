@@ -93,6 +93,8 @@ import { Calendar } from "@/components/ui/calendar";
 import { DateRange } from "react-day-picker";
 import { createPortal } from "react-dom";
 import LogDialog from "./log/log-dialog";
+import { useRouter } from "next/navigation";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 export interface Trade {
   id: string;
@@ -224,7 +226,7 @@ type FilterState = {
   };
 };
 
-const getColumns = (): ColumnDef<Trade>[] => [
+const getColumns = (router: AppRouterInstance): ColumnDef<Trade>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -535,7 +537,10 @@ const getColumns = (): ColumnDef<Trade>[] => [
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <button className="flex h-full w-full items-center justify-center cursor-pointer">
+              <button
+                onClick={() => router.push(`/journal/${row.original.id}`)}
+                className="flex h-full w-full items-center justify-center cursor-pointer hover:text-primary transition-colors"
+              >
                 {hasNotes ? (
                   <RiFileTextLine className="size-4" />
                 ) : (
@@ -587,6 +592,7 @@ type TradeLogsProps = {
 };
 
 export default function TradeLogs({ trades }: TradeLogsProps) {
+  const router = useRouter();
   const id = useId();
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -611,7 +617,7 @@ export default function TradeLogs({ trades }: TradeLogsProps) {
     },
   ]);
 
-  const columns = useMemo(() => getColumns(), []);
+  const columns = useMemo(() => getColumns(router), [router]);
 
   const filteredData = useMemo(() => {
     return trades.filter((trade) => {

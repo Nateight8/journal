@@ -10,6 +10,15 @@ const journalOperations = {
         }
       }
     `,
+
+    updateJournal: gql`
+      mutation UpdateJournal($input: UpdateJournalInput!) {
+        updateJournal(input: $input) {
+          success
+          message
+        }
+      }
+    `,
   },
 
   Queries: {

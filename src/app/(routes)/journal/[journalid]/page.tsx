@@ -1,9 +1,13 @@
-import Editor from "./_components/editor";
+import TradeJournalEntry from "./_components/journal-client-v2";
 
-export default function Page() {
-  return (
-    <div className="">
-      <Editor />
-    </div>
-  );
+interface PageProps {
+  params: {
+    journalid: string;
+  };
+}
+
+export default function Page({ params }: PageProps) {
+  const { journalid } = params;
+
+  return <TradeJournalEntry journalId={journalid} />;
 }
