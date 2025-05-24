@@ -1,7 +1,6 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { Info } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,6 +14,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Progress } from "@/components/ui/progress";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -94,14 +94,14 @@ import { DateRange } from "react-day-picker";
 import { createPortal } from "react-dom";
 import LogDialog from "./log/log-dialog";
 
-export interface Trade {
+export type Trade = {
   id: string;
   date: string;
   symbol: string;
   direction: "Long" | "Short";
   projectedEntry: number;
-  projectedSL: number | null;
-  projectedTP: number | null;
+  projectedSL: number;
+  projectedTP: number;
   actualEntry: number | null;
   actualExit: number | null;
   didHitTP: boolean | null;
@@ -110,10 +110,10 @@ export interface Trade {
   efficiency: number | null;
   notes: string | null;
   accountId: string;
-}
+};
 
 type TradeTooltipProps = {
-  planned?: number | null;
+  planned: number;
   executed: number | null;
   className?: string;
 };
@@ -159,14 +159,6 @@ function TradeTooltip({ planned, executed, className }: TradeTooltipProps) {
     };
   }, [isOpen, handleMouseMove]);
 
-  // Determine the display value
-  const displayValue =
-    executed !== null
-      ? `$${executed.toFixed(2)}`
-      : planned !== null && planned !== undefined
-      ? `$${planned.toFixed(2)}`
-      : "N/A";
-
   return (
     <>
       <div
@@ -174,9 +166,10 @@ function TradeTooltip({ planned, executed, className }: TradeTooltipProps) {
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        {displayValue}
+        {executed !== null ? `$${executed.toFixed(2)}` : "-"}
       </div>
       {isOpen &&
+        executed !== null &&
         createPortal(
           <div
             ref={tooltipRef}
@@ -188,26 +181,22 @@ function TradeTooltip({ planned, executed, className }: TradeTooltipProps) {
               opacity: isOpen ? 1 : 0,
             }}
           >
-            {planned !== null && planned !== undefined && (
-              <div className="flex items-center justify-between gap-4">
-                <span className="text-xs tracking-widest text-muted-foreground">
-                  Planned
-                </span>
-                <span className="text-xs tracking-widest font-medium">
-                  ${planned.toFixed(2)}
-                </span>
-              </div>
-            )}
-            {executed !== null && (
-              <div className="flex items-center justify-between gap-4">
-                <span className="text-xs tracking-widest text-muted-foreground">
-                  Actualized
-                </span>
-                <span className="text-xs tracking-widest font-medium">
-                  ${executed.toFixed(2)}
-                </span>
-              </div>
-            )}
+            <div className="flex items-center justify-between gap-4">
+              <span className="text-xs tracking-widest text-muted-foreground">
+                Planned
+              </span>
+              <span className="text-xs tracking-widest font-medium">
+                ${planned.toFixed(2)}
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-4">
+              <span className="text-xs tracking-widest text-muted-foreground">
+                Actualized
+              </span>
+              <span className="text-xs tracking-widest font-medium">
+                ${executed.toFixed(2)}
+              </span>
+            </div>
           </div>,
           document.body
         )}
@@ -319,52 +308,45 @@ const getColumns = (): ColumnDef<Trade>[] => [
   {
     header: "Stop Loss",
     accessorKey: "projectedSL",
-    cell: ({ row }) => {
-      const projectedSL = row.original.projectedSL;
-      return (
-        <div className="flex flex-col">
-          <TradeTooltip
-            planned={projectedSL ?? 0}
-            executed={projectedSL}
-            className="text-muted-foreground"
-          />
-          <span className="text-xs text-muted-foreground/70">
-            {projectedSL !== null
-              ? `Risk: $${Math.abs(
-                  row.original.projectedEntry - projectedSL
-                ).toFixed(2)}`
-              : "No stop loss"}
-          </span>
-        </div>
-      );
-    },
+    cell: ({ row }) => (
+      <div className="flex flex-col">
+        <TradeTooltip
+          planned={row.original.projectedSL}
+          executed={row.original.projectedSL}
+          className="text-muted-foreground"
+        />
+        <span className="text-xs text-muted-foreground/70">
+          Risk: $
+          {Math.abs(
+            row.original.projectedEntry - row.original.projectedSL
+          ).toFixed(2)}
+        </span>
+      </div>
+    ),
     size: 120,
   },
   {
     header: "Take Profit",
     accessorKey: "projectedTP",
-    cell: ({ row }) => {
-      const projectedTP = row.original.projectedTP;
-      const executed =
-        row.original.didHitTP === true ? projectedTP : row.original.actualExit;
-
-      return (
-        <div className="flex flex-col">
-          <TradeTooltip
-            planned={projectedTP ?? 0}
-            executed={executed}
-            className="text-muted-foreground"
-          />
-          <span className="text-xs text-muted-foreground/70">
-            {projectedTP !== null
-              ? `Reward: $${Math.abs(
-                  projectedTP - row.original.projectedEntry
-                ).toFixed(2)}`
-              : "No take profit"}
-          </span>
-        </div>
-      );
-    },
+    cell: ({ row }) => (
+      <div className="flex flex-col">
+        <TradeTooltip
+          planned={row.original.projectedTP}
+          executed={
+            row.original.didHitTP === true
+              ? row.original.projectedTP
+              : row.original.actualExit
+          }
+          className="text-muted-foreground"
+        />
+        <span className="text-xs text-muted-foreground/70">
+          Reward: $
+          {Math.abs(
+            row.original.projectedTP - row.original.projectedEntry
+          ).toFixed(2)}
+        </span>
+      </div>
+    ),
     size: 120,
   },
   {
@@ -372,34 +354,30 @@ const getColumns = (): ColumnDef<Trade>[] => [
     accessorKey: "actualPL",
     cell: ({ row }) => {
       const pl = row.original.actualPL;
-      const isPositive = pl !== null && pl > 0;
-
-      return (
-        <div className="flex flex-col">
-          <div className="flex items-center gap-1">
-            <span
-              className={cn(
-                "font-medium",
-                pl === null
-                  ? "text-muted-foreground/60"
-                  : isPositive
-                  ? "text-primary"
-                  : "text-destructive"
-              )}
-            >
-              {pl !== null
-                ? `$${Math.abs(pl).toFixed(2)} ${isPositive ? "+" : "-"}`
+      if (pl === null) {
+        return (
+          <div className="flex flex-col">
+            <span className="text-muted-foreground/60">-</span>
+            <span className="text-xs text-muted-foreground/70">
+              Max:{" "}
+              {row.original.maxPossiblePL !== null
+                ? `$${row.original.maxPossiblePL.toFixed(2)}`
                 : "-"}
             </span>
-            {pl === null && (
-              <div className="relative group">
-                <Info className="h-3.5 w-3.5 text-muted-foreground/60" />
-                <div className="absolute left-full ml-1 px-2 py-1 bg-foreground text-background text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity">
-                  Calculated upon trade closure
-                </div>
-              </div>
-            )}
           </div>
+        );
+      }
+      const isPositive = pl > 0;
+      return (
+        <div className="flex flex-col">
+          <span
+            className={cn(
+              "font-medium",
+              isPositive ? "text-primary" : "text-destructive"
+            )}
+          >
+            ${Math.abs(pl).toFixed(2)} {isPositive ? "+" : "-"}
+          </span>
           <span className="text-xs text-muted-foreground/70">
             Max:{" "}
             {row.original.maxPossiblePL !== null
@@ -415,9 +393,7 @@ const getColumns = (): ColumnDef<Trade>[] => [
     header: "Efficiency",
     accessorKey: "efficiency",
     cell: ({ row }) => {
-      const trade = row.original;
-      const efficiency = trade.efficiency;
-
+      const efficiency = row.original.efficiency;
       if (efficiency === null) {
         return (
           <div className="flex h-full w-full items-center justify-center">
@@ -425,98 +401,25 @@ const getColumns = (): ColumnDef<Trade>[] => [
           </div>
         );
       }
-
-      // Normalize for display (0-100%)
-      const normalizedEfficiency = Math.min(Math.max(efficiency, -100), 100);
-      const displayEfficiency = Math.abs(normalizedEfficiency).toFixed(1);
-      const isPositive = normalizedEfficiency >= 0;
-
-      // Calculate risk-reward ratio if possible
-      let riskRewardInfo = null;
-      if (
-        trade.projectedTP !== null &&
-        trade.projectedSL !== null &&
-        trade.projectedEntry
-      ) {
-        const risk = Math.abs(
-          trade.projectedEntry - (trade.projectedSL || trade.projectedEntry)
-        );
-        const reward = Math.abs(
-          (trade.projectedTP || trade.projectedEntry) - trade.projectedEntry
-        );
-        if (risk > 0) {
-          const rrRatio = (reward / risk).toFixed(2);
-          riskRewardInfo = `R:R ${rrRatio}`;
-        }
-      }
-
       return (
-        <TooltipProvider>
+        <TooltipProvider delayDuration={0}>
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="flex h-full w-full items-center px-2">
-                <div className="relative h-1.5 w-16 overflow-hidden rounded-full bg-muted">
-                  <div
-                    className={cn(
-                      "h-full rounded-full",
-                      isPositive ? "bg-primary" : "bg-destructive"
-                    )}
-                    style={{ width: `${Math.abs(normalizedEfficiency)}%` }}
-                  />
-                </div>
+              <div className="flex h-full w-full items-center">
+                <Progress
+                  className={cn(
+                    "h-1 max-w-14",
+                    efficiency >= 0 ? "bg-primary/20" : "bg-destructive/20",
+                    efficiency >= 0
+                      ? "[&>div]:bg-primary"
+                      : "[&>div]:bg-destructive"
+                  )}
+                  value={Math.abs(efficiency)}
+                />
               </div>
             </TooltipTrigger>
-            <TooltipContent className="max-w-[250px] p-3">
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Efficiency:</span>
-                  <span
-                    className={cn(
-                      "font-medium",
-                      isPositive ? "text-primary" : "text-destructive"
-                    )}
-                  >
-                    {isPositive ? "+" : ""}
-                    {displayEfficiency}%
-                  </span>
-                </div>
-
-                {trade.actualPL !== null && (
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">P/L:</span>
-                    <span
-                      className={cn(
-                        "font-medium",
-                        trade.actualPL >= 0
-                          ? "text-primary"
-                          : "text-destructive"
-                      )}
-                    >
-                      {trade.actualPL >= 0 ? "+" : ""}
-                      {trade.actualPL.toFixed(2)}
-                    </span>
-                  </div>
-                )}
-
-                {riskRewardInfo && (
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Risk/Reward:</span>
-                    <span className="font-medium">{riskRewardInfo}</span>
-                  </div>
-                )}
-
-                {trade.maxPossiblePL !== null && (
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">
-                      Max Potential:
-                    </span>
-                    <span className="font-medium">
-                      {trade.maxPossiblePL >= 0 ? "+" : ""}
-                      {trade.maxPossiblePL.toFixed(2)}
-                    </span>
-                  </div>
-                )}
-              </div>
+            <TooltipContent align="start" sideOffset={-8}>
+              <p className="text-muted-foreground">{efficiency}%</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>

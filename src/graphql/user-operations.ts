@@ -8,6 +8,12 @@ const userOperations = {
           name
           email
           onboardingStep
+          accounts {
+            id
+            accountName
+            broker
+            accountSize
+          }
         }
       }
     `,
@@ -24,6 +30,13 @@ const userOperations = {
   },
 };
 
+export interface Account {
+  id: string;
+  accountName: string;
+  broker: string;
+  accountSize: number;
+}
+
 export interface User {
   name: string;
   id: string;
@@ -33,6 +46,7 @@ export interface User {
     | "safety_net"
     | "trading_style"
     | "completed";
+  accounts: Account[];
 }
 
 export interface MeResponse {

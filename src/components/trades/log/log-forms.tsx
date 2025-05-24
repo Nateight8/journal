@@ -17,6 +17,8 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { cn } from "@/lib/utils";
 import { NumberField } from "@/components/ui/number-field";
 import { Textarea } from "@/components/ui/textarea";
+import { useMutation } from "@apollo/client";
+import journalOperations from "@/graphql/journal-operationsl";
 
 export const TargetSchema = z.object({
   label: z.string().min(1, { message: "Label is required" }),
@@ -105,7 +107,27 @@ export function LogTrade({ selectedAccountIds }: LogTradeProps) {
     },
   });
 
+  const [createTrade] = useMutation(journalOperations.Mutations.createJournal);
+
   function onSubmit(data: LogFormValues) {
+    createTrade({
+      variables: {
+        input: {
+          instrument: data.instrument,
+          plannedEntryPrice: data.plannedEntryPrice,
+          plannedStopLoss: data.plannedStopLoss,
+          plannedTakeProfit: data.plannedTakeProfit,
+          size: data.size,
+          executionStyle: data.executionStyle,
+          side: data.side,
+          setupType: data.setupType,
+          timeframe: data.timeframe,
+          notes: data.notes,
+          tags: data.tags,
+          accountId: selectedAccountIds,
+        },
+      },
+    });
     console.log({ ...data, accountIds: selectedAccountIds });
   }
 

@@ -1,6 +1,7 @@
 "use client";
 
-import { useId, useState } from "react";
+import * as React from "react";
+import { useId, useState, useMemo } from "react";
 import {
   CartesianGrid,
   Line,
@@ -378,13 +379,32 @@ function CustomCursor(props: CustomCursorProps) {
   );
 }
 
-export function EquityCurve() {
+interface EquityCurveProps {
+  data?: Array<{
+    time: string;
+    equity: number;
+  }>;
+}
+
+export function EquityCurve({ data = [] }: EquityCurveProps) {
   const id = useId();
-  const [selectedValue, setSelectedValue] = useState("1h");
+  const [selectedValue, setSelectedValue] = useState("1w");
   const selectedIndex = TIME_PERIOD_OPTIONS.indexOf(selectedValue);
 
-  // Determine which data set to use based on the selected time period
-  const getChartDataForTimePeriod = () => {
+  // Transform the data to match the expected format
+  const chartData = useMemo(() => {
+    if (data && data.length > 0) {
+      return data.map((item) => ({
+        date: item.time,
+        time: new Date(item.time).toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+        value: item.equity,
+      }));
+    }
+
+    // Fallback to mock data based on selected time period
     switch (selectedValue) {
       case "1h":
         return hourlyData;
@@ -399,9 +419,7 @@ export function EquityCurve() {
       default:
         return hourlyData;
     }
-  };
-
-  const chartDataToUse = getChartDataForTimePeriod();
+  }, [data, selectedValue]);
 
   return (
     <Card className="gap-4 bg-transparent">
@@ -442,7 +460,7 @@ export function EquityCurve() {
           <LineChart
             accessibilityLayer
             key={selectedValue}
-            data={chartDataToUse}
+            data={chartData}
             margin={{ left: 4, right: 12, top: 12 }}
           >
             <CartesianGrid
@@ -485,6 +503,10 @@ export function EquityCurve() {
               stroke="hsl(var(--chart-6))"
               strokeWidth={2}
               dot={false}
+              // isAnimationActive={true}
+              // animationEasing="ease-out"
+              // animationDuration={1000}
+
               activeDot={{
                 r: 5,
                 fill: "hsl(var(--chart-6))",

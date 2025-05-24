@@ -1,4 +1,5 @@
 "use client";
+import { useState, useMemo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { EmptyChart } from "./empty-chart";
@@ -10,14 +11,55 @@ import {
   Clock,
 } from "lucide-react";
 import { PerformanceCarrousel } from "./performance-carrousel";
+import { SymbolAnalytic } from "@/graphql/trade-analytics";
 
-export default function PerformanceTabs() {
+export default function PerformanceTabs({
+  data = [],
+}: {
+  data?: SymbolAnalytic[];
+}) {
+  const [activeTab, setActiveTab] = useState<string>("all");
+
   const handleLogTrade = (category: string) => {
-    console.log("Logging trade for", category);
+    console.log(`Logging trade for ${category}`);
   };
 
+  // Filter data based on active tab
+  const filteredData = useMemo(() => {
+    console.log("Filtering data for tab:", activeTab);
+    console.log("Original data:", data);
+
+    if (!data || !Array.isArray(data) || data.length === 0) {
+      console.log("No data or invalid data format");
+      return [];
+    }
+
+    if (activeTab === "all") {
+      console.log("Returning all data");
+      return data;
+    }
+
+    const filtered = data.filter((item) => {
+      if (!item || !item.category) {
+        console.warn("Item missing category:", item);
+        return false;
+      }
+      const categoryMatch =
+        item.category.toLowerCase() === activeTab.toLowerCase();
+      console.log(
+        `Item category: ${item.category}, matches ${activeTab}: ${categoryMatch}`
+      );
+      return categoryMatch;
+    });
+
+    console.log("Filtered data:", filtered);
+    return filtered;
+  }, [data, activeTab]);
+
+  console.log("filteredData", filteredData);
+
   return (
-    <Tabs defaultValue="all" className="w-full">
+    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
       <div className="border-b w-full">
         <ScrollArea className="w-full">
           <TabsList className="h-auto rounded-none border-b bg-transparent p-0 inline-flex">
@@ -35,35 +77,55 @@ export default function PerformanceTabs() {
         </ScrollArea>
       </div>
       <TabsContent value="all">
-        <PerformanceCarrousel />
+        <PerformanceCarrousel data={filteredData} />
       </TabsContent>
 
       <TabsContent value="stocks">
-        <PerformanceCarrousel />
+        {filteredData.length > 0 ? (
+          <PerformanceCarrousel data={filteredData} />
+        ) : (
+          <EmptyChart
+            icon={LineChart}
+            category="Stocks"
+            onAction={() => handleLogTrade("stocks")}
+          />
+        )}
       </TabsContent>
 
       <TabsContent value="crypto">
-        <EmptyChart
-          icon={Bitcoin}
-          category="Crypto"
-          onAction={() => handleLogTrade("crypto")}
-        />
+        {filteredData.length > 0 ? (
+          <PerformanceCarrousel data={filteredData} />
+        ) : (
+          <EmptyChart
+            icon={Bitcoin}
+            category="Stocks"
+            onAction={() => handleLogTrade("stocks")}
+          />
+        )}
       </TabsContent>
 
       <TabsContent value="forex">
-        <EmptyChart
-          icon={DollarSign}
-          category="Forex"
-          onAction={() => handleLogTrade("forex")}
-        />
+        {filteredData.length > 0 ? (
+          <PerformanceCarrousel data={filteredData} />
+        ) : (
+          <EmptyChart
+            icon={DollarSign}
+            category="Stocks"
+            onAction={() => handleLogTrade("stocks")}
+          />
+        )}
       </TabsContent>
 
       <TabsContent value="options">
-        <EmptyChart
-          icon={Clock}
-          category="Options"
-          onAction={() => handleLogTrade("options")}
-        />
+        {filteredData.length > 0 ? (
+          <PerformanceCarrousel data={filteredData} />
+        ) : (
+          <EmptyChart
+            icon={Clock}
+            category="Stocks"
+            onAction={() => handleLogTrade("stocks")}
+          />
+        )}
       </TabsContent>
 
       <TabsContent value="indices">

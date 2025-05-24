@@ -22,45 +22,17 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { LogTrade } from "./log-forms";
 import { Label } from "@/components/ui/label";
-
-// Sample accounts data
-const accounts = [
-  {
-    id: "1",
-    name: "Main Trading Account",
-    balance: 10245.0,
-    broker: "Interactive Brokers",
-  },
-  {
-    id: "2",
-    name: "Demo Account",
-    balance: 50000.0,
-    broker: "MetaTrader 5",
-  },
-  {
-    id: "3",
-    name: "Swing Trading",
-    balance: 25680.75,
-    broker: "TD Ameritrade",
-  },
-  {
-    id: "4",
-    name: "Scalping Account",
-    balance: 5120.3,
-    broker: "TradeStation",
-  },
-  {
-    id: "5",
-    name: "Long-term Portfolio",
-    balance: 75450.25,
-    broker: "Fidelity",
-  },
-];
+import { useAuth } from "@/contexts/auth-context";
 
 export function AccountSelection() {
   const [selectedAccounts, setSelectedAccounts] = useState<string[]>([]);
   const [open, setOpen] = useState(false);
   const [showTradeForm, setShowTradeForm] = useState(false);
+
+  const { user } = useAuth();
+
+  // Use user's accounts if available, otherwise fallback to hardcoded accounts
+  const availableAccounts = user?.accounts?.length ? user.accounts : [];
 
   const toggleAccount = (accountId: string) => {
     setSelectedAccounts((current) =>
@@ -129,29 +101,30 @@ export function AccountSelection() {
             <CommandInput placeholder="Find organization" />
             <CommandList>
               <CommandEmpty>No account found.</CommandEmpty>
-              <CommandGroup>
-                {accounts.map((account) => (
+              {availableAccounts.map((account) => {
+                const { id, accountName, accountSize, broker } = account;
+                return (
                   <CommandItem
-                    key={account.id}
-                    value={account.name}
-                    onSelect={() => toggleAccount(account.id)}
+                    key={id}
+                    value={id}
+                    onSelect={() => toggleAccount(id)}
                     className="py-2 w-full"
                   >
                     <div className="flex items-center justify-between w-full">
                       <div>
-                        <p className="text-sm">{account.name}</p>
+                        <p className="text-sm">{accountName}</p>
                         <p className="text-xs text-muted-foreground">
-                          {account.broker}
+                          {broker}
                         </p>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-medium">
-                          ${account.balance.toLocaleString()}
+                          ${accountSize?.toLocaleString()}
                         </span>
                         <Check
                           className={cn(
                             "h-4 w-4",
-                            selectedAccounts.includes(account.id)
+                            selectedAccounts.includes(id)
                               ? "opacity-100"
                               : "opacity-0"
                           )}
@@ -159,8 +132,9 @@ export function AccountSelection() {
                       </div>
                     </div>
                   </CommandItem>
-                ))}
-              </CommandGroup>
+                );
+              })}
+
               <CommandSeparator />
               <CommandGroup>
                 <Button
@@ -182,14 +156,14 @@ export function AccountSelection() {
       {selectedAccounts.length > 0 && (
         <div className="flex flex-wrap gap-1">
           {selectedAccounts.map((id) => {
-            const account = accounts.find((a) => a.id === id);
+            const account = availableAccounts.find((a) => a.id === id);
             return (
               <Badge
                 key={id}
                 variant="secondary"
                 className="flex items-center gap-1"
               >
-                {account?.name}
+                {account?.accountName}
                 <button
                   className="ml-1 rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
                   onClick={() => toggleAccount(id)}
