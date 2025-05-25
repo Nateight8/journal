@@ -68,7 +68,7 @@ export type GoalOption = (typeof goalOptions)[number];
 // Main form schema
 export const FormSchema = z.object({
   // From AccountSetup
-  goals: z.array(z.enum(goalOptions)).min(1, "Please select at least one goal"),
+  goals: z.enum(goalOptions),
 
   // From AccountProfile
   propFirm: z.enum(propFirms).optional(),
@@ -93,7 +93,7 @@ export function Onboard() {
   const form = useForm<OnboardingFormValues>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      goals: [],
+      goals: undefined,
       propFirm: undefined,
       accountSize: 0,
       experienceLevel: undefined,

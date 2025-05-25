@@ -71,7 +71,7 @@ export type GoalOption = (typeof goalOptions)[number];
 // Main form schema
 export const FormSchema = z.object({
   // From AccountSetup
-  goals: z.array(z.enum(goalOptions)).min(1, "Please select at least one goal"),
+  goal: z.enum(goalOptions),
 
   // From AccountProfile
   propFirm: z.enum(propFirms).optional(),
@@ -90,13 +90,13 @@ export const FormSchema = z.object({
 });
 
 // Infer the type from the schema
-export type OnboardingFormValues = z.infer<typeof FormSchema>;
+export type accountSetupFormValues = z.infer<typeof FormSchema>;
 
 export function AccountSetup() {
-  const form = useForm<OnboardingFormValues>({
+  const form = useForm<accountSetupFormValues>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      goals: [],
+      goal: undefined,
       propFirm: undefined,
       accountSize: undefined,
       experienceLevel: undefined,
@@ -120,13 +120,13 @@ export function AccountSetup() {
     },
   });
 
-  const onSubmit = (data: OnboardingFormValues) => {
+  const onSubmit = (data: accountSetupFormValues) => {
     // Save trading account data to localStorage
     localStorage.setItem(
       "tradingAccount",
       JSON.stringify({
         size: data.accountSize,
-        goals: data.goals,
+        goal: data.goal,
         experienceLevel: data.experienceLevel,
         biggestChallenge: data.biggestChallenge,
         accountName: data.accountName,
@@ -189,7 +189,7 @@ export function AccountSetup() {
                           Selected Goals
                         </span>
                         <span className="font-medium text-primary">
-                          {form.watch("goals")?.join(", ") || "Not selected"}
+                          {form.watch("goal") || "Not selected"}
                         </span>
                       </div>
                     </div>

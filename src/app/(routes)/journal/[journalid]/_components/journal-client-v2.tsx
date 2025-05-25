@@ -46,8 +46,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import journalOperations from "@/graphql/journal-operationsl";
-import { useMutation } from "@apollo/client";
+import journalOperations, {
+  GetJournalResponse,
+} from "@/graphql/journal-operationsl";
+import { useMutation, useQuery } from "@apollo/client";
 import WorkInProgress from "@/components/wip";
 
 export default function EnhancedTradeJournal({
@@ -270,6 +272,27 @@ export default function EnhancedTradeJournal({
       },
     }
   );
+
+  const { data: journalData } = useQuery<GetJournalResponse>(
+    journalOperations.Queries.getJournal,
+    {
+      variables: {
+        getJournalId: journalId,
+      },
+    }
+  );
+
+  const journal = journalData?.getJournal;
+
+  // Set the default note when journal data is loaded
+  useEffect(() => {
+    if (journal?.note) {
+      setJournalNote(journal.note);
+      setEditorContent(journal.note);
+    }
+  }, [journal?.note]);
+
+  console.log("Journal data:", journal?.note);
 
   const handleSaveNote = () => {
     console.log("Saving content:", editorContent);

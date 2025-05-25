@@ -45,6 +45,31 @@ const journalOperations = {
         }
       }
     `,
+    getJournal: gql`
+      query GetJournal($getJournalId: ID!) {
+        getJournal(id: $getJournalId) {
+          note
+          instrument
+          exitPrice
+          executionStyle
+          executionNotes
+          executedStopLoss
+          executedEntryPrice
+          createdAt
+          account {
+            accountName
+            accountSize
+            accountCurrency
+          }
+          size
+          side
+          targetHit
+          plannedTakeProfit
+          plannedStopLoss
+          plannedEntryPrice
+        }
+      }
+    `,
   },
 };
 

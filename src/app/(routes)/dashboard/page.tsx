@@ -1,82 +1,118 @@
 "use client";
 
-// import { mockData } from "@/lib/mock-data";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { TrendingUp, BarChart3, Target, DollarSign } from "lucide-react";
+import DashboardWithTemplateDrawer from "@/components/journaling/templat-drawer";
+// import DashboardWithTemplateDrawer from "@/components/journaling/templat-drawer";
 
-import { Overview } from "@/components/charts/overview";
-import Recent from "@/components/trades/recent";
-// import { Performance } from "@/components/trades/performance";
-// import { WinLossMeter } from "@/components/win-loss/radial-chart";
-// import HeatMap from "@/components/charts/heat-map";
-// import WinLossState from "@/components/win-loss/win-loss-stats";
-import { useAuth } from "@/contexts/auth-context";
-import { useQuery } from "@apollo/client";
-import dashboardOperations, {
-  DashboardData,
-} from "@/graphql/dashboard-operations";
-import WorkInProgress from "@/components/wip";
-
-export default function Page() {
-  const { user } = useAuth();
-
-  const { data } = useQuery<DashboardData>(
-    dashboardOperations.Queries.dashboardData
-  );
-
-  // data?.dashboard.tradePerformance <==winLossState
+export default function DashboardTemplateDemo() {
   return (
-    <>
-      <div className="flex items-center justify-between gap-4 px-4 md:px-0">
-        <div className="space-y-1">
-          <h1 className="text-2xl font-semibold">{user?.name}!</h1>
-          <p className="text-sm text-muted-foreground">
-            Here&rsquo;s an overview of your performance lately. Keep track of
-            your progress and make the most of it!
-          </p>
+    <DashboardWithTemplateDrawer
+      hasTemplate={true} // Set to true to see the success state
+      onTemplateCreated={(content) => {
+        console.log("Template created with content:", content);
+      }}
+    >
+      {/* Sample Dashboard Content */}
+      <div className="p-6 space-y-6">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Total P&L
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center space-x-2">
+                <DollarSign className="w-4 h-4 text-primary" />
+                <span className="text-2xl font-bold text-primary">+$2,847</span>
+              </div>
+              <Badge
+                variant="default"
+                className="mt-2 bg-primary/10 text-primary"
+              >
+                <TrendingUp className="w-3 h-3 mr-1" />
+                +12.4%
+              </Badge>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Win Rate
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center space-x-2">
+                <Target className="w-4 h-4 text-blue-600" />
+                <span className="text-2xl font-bold text-foreground">
+                  68.2%
+                </span>
+              </div>
+              <p className="text-sm text-muted-foreground mt-2">
+                15 of 22 trades
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Avg Risk/Reward
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center space-x-2">
+                <BarChart3 className="w-4 h-4 text-orange-600" />
+                <span className="text-2xl font-bold text-foreground">
+                  1:2.4
+                </span>
+              </div>
+              <p className="text-sm text-muted-foreground mt-2">Above target</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Active Trades
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center space-x-2">
+                <TrendingUp className="w-4 h-4 text-muted-foreground" />
+                <span className="text-2xl font-bold text-foreground">3</span>
+              </div>
+              <p className="text-sm text-muted-foreground mt-2">2 profitable</p>
+            </CardContent>
+          </Card>
         </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Recent Trades</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {[1, 2, 3].map((i) => (
+                <div
+                  key={i}
+                  className="flex items-center justify-between p-3 bg-muted/30 rounded-lg"
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="w-2 h-2 bg-primary rounded-full"></div>
+                    <span className="font-medium">EUR/USD Long</span>
+                    <Badge variant="outline">Closed</Badge>
+                  </div>
+                  <span className="text-primary font-semibold">+$124</span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       </div>
-      {/* Numbers */}
-      <Overview data={data?.dashboard.portfolioOverview} />
-
-      <div className="md:grid hidden  md:grid-cols-2 gap-4 w-full">
-        {/* <Performance data={mockData.performance.metrics} /> */}
-        <WorkInProgress
-          variant="compact"
-          title="Trader's Performance (Coming Soon)"
-          description="View your recent trades and see how they're performing."
-          progress={35}
-        />
-
-        <Recent trades={data?.dashboard.recentTrades || []} />
-      </div>
-
-      {/* <div className="px-4 md:px-0 md:hidden">
-        <div className="space-y-4">
-          <Recent trades={data?.dashboard.recentTrades || []} />
-        </div>
-      </div> */}
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="h-full">
-          <WorkInProgress
-            variant="compact"
-            title="PNL Stats (Coming Soon)"
-            description="View your PNL stats and see how they're performing."
-            progress={15}
-          />
-          {/* <WinLossState winLossStats={data?.dashboard.winLossTradeStats} /> */}
-        </div>
-        <div className="h-full">
-          {/* <HeatMap /> */}
-          <WorkInProgress
-            variant="compact"
-            title="Heat map (Coming Soon)"
-            description="View your heat map and see how they're performing."
-            progress={15}
-          />
-        </div>
-      </div>
-
-      {/* Table */}
-    </>
+    </DashboardWithTemplateDrawer>
   );
 }

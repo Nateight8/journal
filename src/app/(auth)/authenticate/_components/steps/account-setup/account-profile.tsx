@@ -22,7 +22,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 import { UseFormReturn } from "react-hook-form";
-import { OnboardingFormValues } from "../../onboard";
+import { accountSetupFormValues } from "./account-setup";
 
 type AccountSize = {
   value: number;
@@ -33,12 +33,12 @@ type AccountSize = {
 export function AccountProfile({
   form,
 }: {
-  form: UseFormReturn<OnboardingFormValues>;
+  form: UseFormReturn<accountSetupFormValues>;
 }) {
-  const goals = form.watch("goals");
-  const isPropFirmSelected = goals?.includes("PROP");
+  const goal = form.watch("goal");
+  const isPropFirmSelected = goal === "PROP";
 
-  console.log("FORM", goals);
+  console.log("FORM", goal);
   const { control } = form;
 
   const propFirms = [
