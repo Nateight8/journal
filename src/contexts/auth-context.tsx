@@ -81,7 +81,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   function signInWithGoogle() {
-    window.location.href = "http://localhost:4000/api/auth/google";
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+    window.location.href = `${apiUrl}/api/auth/google`;
   }
 
   // Provide context value
