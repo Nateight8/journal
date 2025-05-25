@@ -47,7 +47,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import journalOperations, {
-  GetJournalResponse,
+  GetLoggedJournalsResponse,
 } from "@/graphql/journal-operationsl";
 import { useMutation, useQuery } from "@apollo/client";
 import WorkInProgress from "@/components/wip";
@@ -273,7 +273,7 @@ export default function EnhancedTradeJournal({
     }
   );
 
-  const { data: journalData } = useQuery<GetJournalResponse>(
+  const { data: journalData } = useQuery<GetLoggedJournalsResponse>(
     journalOperations.Queries.getJournal,
     {
       variables: {
@@ -282,7 +282,9 @@ export default function EnhancedTradeJournal({
     }
   );
 
-  const journal = journalData?.getJournal;
+  const journal = journalData?.getLoggedJournals?.find(
+    (journal) => journal.id === journalId
+  );
 
   // Set the default note when journal data is loaded
   useEffect(() => {

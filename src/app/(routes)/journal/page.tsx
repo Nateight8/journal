@@ -30,7 +30,7 @@ export default function JournalPage() {
   const trades = data?.getLoggedJournals?.map(transformToTrade) || [];
 
   return (
-    <div className="px-4 md:px-0">
+    <div className="px-4 md:px-6 lg:px-8">
       <div className="space-y-4">
         <TradeLogs trades={trades} />
       </div>

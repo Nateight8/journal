@@ -7,6 +7,7 @@ import dashboardOperations, {
   DashboardData,
 } from "@/graphql/dashboard-operations";
 import journalOperations from "@/graphql/journal-operationsl";
+import { PageTransitionLoader } from "@/components/loading/page-transition";
 
 export default function Page() {
   // Sample user stats - you can fetch this from your API
@@ -25,7 +26,12 @@ export default function Page() {
   );
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <PageTransitionLoader
+        isLoading={loading}
+        message="Loading your trading dashboard..."
+      />
+    );
   }
 
   const hasJournalTemplate = data?.dashboard.tradingPlan.isOwner;
@@ -49,9 +55,9 @@ export default function Page() {
         <div className="flex-1 overflow-hidden">
           {data?.dashboard && (
             <DashboardWithTemplateDrawer
-              isOwner={true}
-              hasJournalTemplate={hasJournalTemplate!}
-              hasTradingPlan={hasTradingPlan!}
+              isOwner={data?.dashboard.tradingPlan.isOwner}
+              hasJournalTemplate={hasJournalTemplate}
+              hasTradingPlan={hasTradingPlan}
               journalTemplateData={journalTemplateData}
               tradingPlanData={tradingPlanData}
               userName={user?.name} // You can customize this
