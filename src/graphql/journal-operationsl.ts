@@ -19,6 +19,24 @@ const journalOperations = {
         }
       }
     `,
+
+    updateJournalTemplate: gql`
+      mutation Mutation($note: JSON!) {
+        updateJournalTemplate(note: $note) {
+          success
+          message
+        }
+      }
+    `,
+
+    updateTradingPlan: gql`
+      mutation Mutation($note: JSON!) {
+        updateTradingPlanNote(note: $note) {
+          success
+          message
+        }
+      }
+    `,
   },
 
   Queries: {

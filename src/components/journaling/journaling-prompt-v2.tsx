@@ -8,7 +8,6 @@ import {
   FileText,
   Target,
   TrendingUp,
-  X,
   ArrowRight,
   Lightbulb,
   CheckCircle,
@@ -56,7 +55,7 @@ export default function DashboardPrompt({
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-foreground">
-                  Boost Your Trading Performance
+                  Where to start...
                 </h3>
                 <p className="text-sm text-muted-foreground">
                   Set yourself up for success with structured planning and
@@ -139,11 +138,11 @@ export default function DashboardPrompt({
                     <Button
                       onClick={onCreateTradingPlan}
                       size="sm"
-                      className="bg-primary hover:bg-primary/90"
+                      variant="outline"
+                      className="border-green-600 text-green-600 hover:bg-green-50"
                     >
                       <FileText className="w-4 h-4 mr-2" />
-                      Create Trading Plan
-                      <ArrowRight className="w-4 h-4 ml-2" />
+                      Write Your Trading Plan (optional but recommended)
                     </Button>
                   </div>
                 </div>
@@ -199,15 +198,7 @@ export default function DashboardPrompt({
             </div>
           </div>
 
-          {/* Dismiss Button */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleDismiss}
-            className="p-1 h-auto"
-          >
-            <X className="w-4 h-4" />
-          </Button>
+          {/* Dismiss button removed as per requirements */}
         </div>
       </CardContent>
     </Card>

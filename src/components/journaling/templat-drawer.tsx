@@ -2,35 +2,86 @@
 import { useState } from "react";
 import type React from "react";
 
+import { CheckCircle, BookOpen, Target, Eye } from "lucide-react";
+
+import { Card, CardContent } from "../ui/card";
 import DashboardPrompt from "./journaling-prompt-v2";
+import { Badge } from "../ui/badge";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+  TooltipProvider,
+} from "../ui/tooltip";
+import { Button } from "../ui/button";
 import JournalTemplateDrawer from "./template";
-import { CheckCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 interface DashboardWithTemplateDrawerProps {
   children?: React.ReactNode;
-  hasTemplate?: boolean;
+  isOwner?: boolean; // Database response indicating if user has journal/trading plan
+  hasJournalTemplate?: boolean; // Specific to journal template
+  hasTradingPlan?: boolean; // Specific to trading plan
   onTemplateCreated?: (content: string) => void;
+  onTradingPlanCreated?: (content: string) => void;
+  journalTemplateData?: string; // Existing journal template content
+  tradingPlanData?: string; // Existing trading plan content
 }
 
 export default function DashboardWithTemplateDrawer({
   children,
-  hasTemplate = false,
+  isOwner = false,
+  hasJournalTemplate = false,
+  hasTradingPlan = false,
   onTemplateCreated,
+  onTradingPlanCreated,
+  journalTemplateData = "",
+  tradingPlanData = "",
 }: DashboardWithTemplateDrawerProps) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [templateExists, setTemplateExists] = useState(hasTemplate);
+  const [drawerMode, setDrawerMode] = useState<"journal" | "trading-plan">(
+    "journal"
+  );
+  const [localHasJournal, setLocalHasJournal] = useState(hasJournalTemplate);
+  const [localHasTradingPlan, setLocalHasTradingPlan] =
+    useState(hasTradingPlan);
 
   const handleCreateTemplate = () => {
-    console.log("Create template clicked - opening drawer");
+    console.log("Create journal template clicked - opening drawer");
+    setDrawerMode("journal");
+    setIsDrawerOpen(true);
+  };
+
+  const handleCreateTradingPlan = () => {
+    console.log("Create trading plan clicked - opening drawer");
+    setDrawerMode("trading-plan");
+    setIsDrawerOpen(true);
+  };
+
+  const handleViewTemplate = () => {
+    console.log(
+      "View journal template clicked - opening drawer with existing data"
+    );
+    setDrawerMode("journal");
+    setIsDrawerOpen(true);
+  };
+
+  const handleViewTradingPlan = () => {
+    console.log(
+      "View trading plan clicked - opening drawer with existing data"
+    );
+    setDrawerMode("trading-plan");
     setIsDrawerOpen(true);
   };
 
   const handleSaveTemplate = (content: string) => {
     console.log("Template saved:", content);
-    setTemplateExists(true);
-    onTemplateCreated?.(content);
-    // Keep drawer open until user manually closes it
+    if (drawerMode === "journal") {
+      setLocalHasJournal(true);
+      onTemplateCreated?.(content);
+    } else {
+      setLocalHasTradingPlan(true);
+      onTradingPlanCreated?.(content);
+    }
   };
 
   const handleCloseDrawer = () => {
@@ -38,79 +89,219 @@ export default function DashboardWithTemplateDrawer({
     setIsDrawerOpen(false);
   };
 
+  const handlePromptDismiss = () => {
+    console.log("Prompt dismissed");
+    // You can add logic here to remember the dismissal state
+  };
+
+  // Determine what to show based on ownership status
+  const showPrompt = !isOwner || !localHasJournal || !localHasTradingPlan;
+  const showJournalPrompt = !localHasJournal;
+  const showTradingPlanPrompt = !localHasTradingPlan;
+
+  // Get the appropriate initial content for the drawer
+  const getInitialContent = () => {
+    if (drawerMode === "journal") {
+      return journalTemplateData;
+    } else {
+      return tradingPlanData;
+    }
+  };
+
+  // Get the appropriate drawer title
+  const getDrawerTitle = () => {
+    if (drawerMode === "journal") {
+      return localHasJournal
+        ? "Edit Journal Template"
+        : "Create Journal Template";
+    } else {
+      return localHasTradingPlan ? "Edit Trading Plan" : "Create Trading Plan";
+    }
+  };
+
   return (
-    <>
-      {/* Dashboard Content */}
-      <div
-        className={`min-h-screen transition-transform duration-500 ease-out ${
-          isDrawerOpen ? "scale-95 -translate-y-8" : "scale-100 translate-y-0"
-        }`}
-        style={{
-          pointerEvents: isDrawerOpen ? "none" : "auto",
-          transformOrigin: "center top",
-        }}
-      >
-        {/* Dashboard Prompt - only show if no template exists */}
-        {!templateExists && (
-          <div className="p-6">
-            <DashboardPrompt
-              showTemplatePrompt={true}
-              showTradingPlanPrompt={false}
-              onCreateTemplate={handleCreateTemplate}
-              onDismiss={() => console.log("Prompt dismissed")}
-            />
-          </div>
-        )}
-
-        {/* Template Success State */}
-        {templateExists && (
-          <div className="p-6">
-            <div className="bg-primary/5 border border-primary/20 rounded-lg p-6">
-              <div className="flex items-center space-x-3">
-                <div className="bg-primary/20 p-2 rounded-lg">
-                  <CheckCircle className="w-5 h-5 text-primary" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-foreground">
-                    Journal Template Created!
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    Your personalized template is ready. It will be used for all
-                    new journal entries.
-                  </p>
-                </div>
-              </div>
-              <div className="mt-4 flex items-center space-x-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleCreateTemplate}
-                  className="border-primary/30 text-primary hover:bg-primary/10"
-                >
-                  Edit Template
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => console.log("Create new journal entry")}
-                >
-                  Create Journal Entry
-                </Button>
-              </div>
+    <TooltipProvider>
+      <div className="relative h-full overflow-hidden">
+        {/* Dashboard Content */}
+        <div
+          className={`h-full transition-transform duration-500 ease-out ${
+            isDrawerOpen ? "scale-95 -translate-y-4" : "scale-100 translate-y-0"
+          }`}
+          style={{
+            pointerEvents: isDrawerOpen ? "none" : "auto",
+            transformOrigin: "center top",
+          }}
+        >
+          {/* Show prompt if user doesn't have templates/plans */}
+          {showPrompt && (
+            <div className="p-6">
+              <DashboardPrompt
+                showTemplatePrompt={showJournalPrompt}
+                showTradingPlanPrompt={showTradingPlanPrompt}
+                onCreateTemplate={handleCreateTemplate}
+                onCreateTradingPlan={handleCreateTradingPlan}
+                onDismiss={handlePromptDismiss}
+              />
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Rest of Dashboard Content */}
-        {children}
+          {/* Show owner dashboard if user has templates/plans */}
+          {isOwner && (localHasJournal || localHasTradingPlan) && (
+            <div className="p-6">
+              <Card className="border-primary/20 bg-gradient-to-r from-primary/5 via-primary/3 to-background">
+                <CardContent className="p-6">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1 space-y-4">
+                      {/* Header */}
+                      <div className="flex items-center space-x-3">
+                        <div className="bg-primary/20 p-2 rounded-lg">
+                          <CheckCircle className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-semibold text-foreground">
+                            Your Trading Setup
+                          </h3>
+                          <p className="text-sm text-muted-foreground">
+                            Manage your journal templates and trading plans
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Status and Actions */}
+                      <div className="flex flex-wrap items-center gap-4">
+                        {/* Journal Template Status */}
+                        {localHasJournal ? (
+                          <div className="flex items-center space-x-2">
+                            <Badge
+                              variant="default"
+                              className="bg-primary/10 text-primary"
+                            >
+                              <BookOpen className="w-3 h-3 mr-1" />
+                              Journal Template Ready
+                            </Badge>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={handleViewTemplate}
+                                  className="border-primary/30 text-primary hover:bg-primary/10"
+                                >
+                                  <Eye className="w-4 h-4 mr-1" />
+                                  View Template
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>View and edit your journal template</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </div>
+                        ) : (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={handleCreateTemplate}
+                            className="border-blue-500/30 text-blue-600 hover:bg-blue-500/10"
+                          >
+                            <BookOpen className="w-4 h-4 mr-1" />
+                            Create Journal Template
+                          </Button>
+                        )}
+
+                        {/* Trading Plan Status */}
+                        {localHasTradingPlan ? (
+                          <div className="flex items-center space-x-2">
+                            <Badge
+                              variant="default"
+                              className="bg-green-500/10 text-green-600 border-green-500/20"
+                            >
+                              <Target className="w-3 h-3 mr-1" />
+                              Trading Plan Ready
+                            </Badge>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={handleViewTradingPlan}
+                                  className="border-green-500/30 text-green-600 hover:bg-green-500/10"
+                                >
+                                  <Eye className="w-4 h-4 mr-1" />
+                                  View Plan
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>View and edit your trading plan</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </div>
+                        ) : (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={handleCreateTradingPlan}
+                            className="border-primary/30 text-primary hover:bg-primary/10"
+                          >
+                            <Target className="w-4 h-4 mr-1" />
+                            Create Trading Plan
+                          </Button>
+                        )}
+                      </div>
+
+                      {/* Quick Actions */}
+                      {localHasJournal && localHasTradingPlan && (
+                        <div className="bg-muted/50 rounded-lg p-4">
+                          <h4 className="font-medium text-foreground mb-3">
+                            Quick Actions
+                          </h4>
+                          <div className="flex flex-wrap gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() =>
+                                console.log("Create new journal entry")
+                              }
+                            >
+                              New Journal Entry
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => console.log("Review trading plan")}
+                            >
+                              Review Plan
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => console.log("View analytics")}
+                            >
+                              View Analytics
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
+          {/* Rest of Dashboard Content */}
+          <div className="h-full overflow-y-auto">{children}</div>
+        </div>
+
+        {/* Template/Plan Drawer */}
+        <JournalTemplateDrawer
+          isOpen={isDrawerOpen}
+          onClose={handleCloseDrawer}
+          onSave={handleSaveTemplate}
+          initialContent={getInitialContent()}
+          title={getDrawerTitle()}
+          mode={drawerMode}
+        />
       </div>
-
-      {/* Template Drawer */}
-      <JournalTemplateDrawer
-        isOpen={isDrawerOpen}
-        onClose={handleCloseDrawer}
-        onSave={handleSaveTemplate}
-      />
-    </>
+    </TooltipProvider>
   );
 }

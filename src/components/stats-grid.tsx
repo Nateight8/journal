@@ -17,6 +17,7 @@ import {
   Activity,
   TrendingUp,
 } from "lucide-react";
+import { Card, CardContent } from "./ui/card";
 
 interface StatsCardProps {
   title: string;
@@ -40,7 +41,7 @@ export function StatsCard({
   const trendColor = isPositive ? "text-green-500" : "text-red-500";
 
   return (
-    <div className="relative p-4 lg:p-5 group hover:bg-muted/20 border-r border-border last:border-r-0">
+    <div className="relative p-4 lg:p-5 group  border-r border-border last:border-r-0">
       <div className="relative flex items-center gap-4">
         {/* Icon */}
         <div className="max-[480px]:hidden size-10 shrink-0 rounded-full bg-muted border border-border flex items-center justify-center text-primary">
@@ -94,52 +95,68 @@ export function TradingStatsGrid({ stats }: { stats?: OverviewStats }) {
     <Carousel className="w-full  ">
       <CarouselContent className="-ml-1 bg-transparent space-x-4 p-2">
         <CarouselItem className="pl-1 basis-[80%] border rounded-lg md:basis-[25%] lg:basis-1/3">
-          <StatsCard
-            title="Win Rate"
-            value={stats?.winRate.value?.toString() || "0"}
-            change={{
-              value: stats?.winRate.percentage?.toString() || "0",
-              trend: winRateIsPositive ? "up" : "down",
-            }}
-            icon={<BarChart2 />}
-            tooltip="The percentage of trades that result in a profit. Higher is better."
-          />
+          <Card>
+            <CardContent>
+              <StatsCard
+                title="Win Rate"
+                value={stats?.winRate.value?.toString() || "0"}
+                change={{
+                  value: stats?.winRate.percentage?.toString() || "0",
+                  trend: winRateIsPositive ? "up" : "down",
+                }}
+                icon={<BarChart2 />}
+                tooltip="The percentage of trades that result in a profit. Higher is better."
+              />
+            </CardContent>
+          </Card>
         </CarouselItem>
         <CarouselItem className="pl-1 basis-[80%] border rounded-lg md:basis-[25%] lg:basis-1/3">
-          <StatsCard
-            title="Profit Factor"
-            value={stats?.profitFactor.value?.toString() || "0"}
-            change={{
-              value: stats?.profitFactor.percentage?.toString() || "0",
-              trend: profitFactorIsPositive ? "up" : "down",
-            }}
-            icon={<Activity />}
-            tooltip="The ratio of gross profits to gross losses. A value above 1 indicates profitability."
-          />
+          <Card>
+            <CardContent>
+              <StatsCard
+                title="Profit Factor"
+                value={stats?.profitFactor.value?.toString() || "0"}
+                change={{
+                  value: stats?.profitFactor.percentage?.toString() || "0",
+                  trend: profitFactorIsPositive ? "up" : "down",
+                }}
+                icon={<Activity />}
+                tooltip="The ratio of gross profits to gross losses. A value above 1 indicates profitability."
+              />
+            </CardContent>
+          </Card>
         </CarouselItem>
         <CarouselItem className="pl-1 basis-[80%] border rounded-lg md:basis-[25%] lg:basis-1/3">
-          <StatsCard
-            title="Average Return"
-            value={stats?.avgReturn.value?.toString() || "0"}
-            change={{
-              value: stats?.avgReturn.percentage?.toString() || "0",
-              trend: avgReturnIsPositive ? "up" : "down",
-            }}
-            icon={<DollarSign />}
-            tooltip="The average profit per winning trade. Higher values indicate more profitable trades."
-          />
+          <Card>
+            <CardContent>
+              <StatsCard
+                title="Average Return"
+                value={stats?.avgReturn.value?.toString() || "0"}
+                change={{
+                  value: stats?.avgReturn.percentage?.toString() || "0",
+                  trend: avgReturnIsPositive ? "up" : "down",
+                }}
+                icon={<DollarSign />}
+                tooltip="The average profit per winning trade. Higher values indicate more profitable trades."
+              />
+            </CardContent>
+          </Card>
         </CarouselItem>
         <CarouselItem className="pl-1 basis-[80%] border rounded-lg md:basis-[25%] lg:basis-1/3">
-          <StatsCard
-            title="Max Drawdown"
-            value={stats?.maxDrawdown.value?.toString() || "0"}
-            change={{
-              value: stats?.maxDrawdown.percentage?.toString() || "0",
-              trend: maxDrawdownIsPositive ? "up" : "down",
-            }}
-            icon={maxDrawdownIsPositive ? <TrendingUp /> : <TrendingDown />}
-            tooltip="The largest peak-to-trough decline in portfolio value. Lower is better."
-          />
+          <Card>
+            <CardContent>
+              <StatsCard
+                title="Max Drawdown"
+                value={stats?.maxDrawdown.value?.toString() || "0"}
+                change={{
+                  value: stats?.maxDrawdown.percentage?.toString() || "0",
+                  trend: maxDrawdownIsPositive ? "up" : "down",
+                }}
+                icon={maxDrawdownIsPositive ? <TrendingUp /> : <TrendingDown />}
+                tooltip="The largest peak-to-trough decline in portfolio value. Lower is better."
+              />
+            </CardContent>
+          </Card>
         </CarouselItem>
       </CarouselContent>
       {/* <CarouselPrevious />

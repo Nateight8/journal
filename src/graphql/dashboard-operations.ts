@@ -56,6 +56,28 @@ const dashboardOperations = {
             totalReward
             losses
           }
+          tradingPlan {
+            note {
+              html
+              format
+              raw
+            }
+            isOwner
+            id
+            updatedAt
+            createdAt
+          }
+
+          journalTemplate {
+            note {
+              raw
+              html
+              format
+            }
+            id
+            updatedAt
+            createdAt
+          }
         }
       }
     `,
@@ -112,11 +134,21 @@ interface WinLossTradeStats {
   losses: number;
 }
 
+interface TradingPlan {
+  id: string;
+  isOwner: boolean;
+  note: Record<string, unknown>; // For JSONB data with unknown structure
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 interface DashboardData {
   dashboard: {
     portfolioOverview: PortfolioOverview;
     recentTrades: RecentTrade[];
     winLossTradeStats: WinLossTradeStats;
+    tradingPlan: TradingPlan;
+    journalTemplate: TradingPlan;
   };
 }
 
