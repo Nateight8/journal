@@ -1,5 +1,5 @@
 import { GalleryVerticalEnd } from "lucide-react";
-import { LoginForm } from "./steps/auth-form";
+import { LoginForm } from "../../onboarding/_components/steps/auth-form";
 
 export default function Authenticate() {
   return (

@@ -10,7 +10,7 @@ import journalOperations from "@/graphql/journal-operationsl";
 import { PageTransitionLoader } from "@/components/loading/page-transition";
 import DashboardWithTemplateDrawer from "./template-drawer";
 
-export default function Page() {
+export default function Dashboard() {
   // Sample user stats - you can fetch this from your API
   const { user } = useAuth();
 
@@ -42,11 +42,9 @@ export default function Page() {
 
   // Safely extract HTML content from the note with a fallback default
   const tradingPlanData: string =
-    (typeof note?.html === "string" ? note.html : null) ||
-    "<h1>My Trading Plan</h1><p>Create your trading plan to get started</p>";
+    (typeof note?.html === "string" ? note.html : null) || "";
   const journalTemplateData: string =
-    (typeof journalNote?.html === "string" ? journalNote.html : null) ||
-    "<h1>My Journal Template</h1><p>Create your journal template to get started</p>";
+    (typeof journalNote?.html === "string" ? journalNote.html : null) || "";
 
   return (
     <div className="flex h-screen ">
