@@ -5,15 +5,12 @@ const userOperations = {
     me: gql`
       query Me {
         me {
+          updatedAt
           name
+          image
+          id
           email
-          onboardingStep
-          accounts {
-            id
-            accountName
-            broker
-            accountSize
-          }
+          createdAt
         }
       }
     `,

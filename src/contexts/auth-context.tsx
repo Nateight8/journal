@@ -81,8 +81,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   function signInWithGoogle() {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
-    window.location.href = `${apiUrl}/api/auth/google`;
+    window.location.href = `https://tradzil-server.onrender.com/api/auth/google`;
   }
 
   // Provide context value
