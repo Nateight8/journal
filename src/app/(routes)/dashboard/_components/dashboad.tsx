@@ -1,6 +1,6 @@
 "use client";
 
-import DashboardWithTemplateDrawer from "./_components/template-drawer";
+// import DashboardWithTemplateDrawer from "./_components/template-drawer";
 import { useAuth } from "@/contexts/auth-context";
 import { useMutation, useQuery } from "@apollo/client";
 import dashboardOperations, {
@@ -8,6 +8,7 @@ import dashboardOperations, {
 } from "@/graphql/dashboard-operations";
 import journalOperations from "@/graphql/journal-operationsl";
 import { PageTransitionLoader } from "@/components/loading/page-transition";
+import DashboardWithTemplateDrawer from "./template-drawer";
 
 export default function Page() {
   // Sample user stats - you can fetch this from your API
