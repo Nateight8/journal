@@ -1,11 +1,12 @@
-import { Inter } from "next/font/google";
+import { Quicksand } from "next/font/google";
 import "./globals.css";
+import "swiper/css";
+import "swiper/css/pagination";
 import { ApolloWrapper } from "@/components/providers/apollo-wraper";
 import { AuthProvider } from "@/contexts/auth-context";
 import { Metadata } from "next";
-
 // Optimize font loading with display swap and preload
-const fontSans = Inter({
+const fontSans = Quicksand({
   subsets: ["latin"],
   variable: "--font-sans",
   display: "swap",
@@ -51,7 +52,7 @@ export default function RootLayout({
           href="https://fonts.gstatic.com"
           crossOrigin="anonymous"
         />
-        
+
         {/* Preload critical resources */}
         <link
           rel="preload"

@@ -315,7 +315,7 @@ export default function JournalEditor({
           color: white;
         }
       `}</style>
-      <div className="max-w-5xl mx-auto px-6 py-8">
+      <div className="max-w-5xl mx-auto  py-8">
         {hasMultipleH1s && (
           <Alert className="mb-6 border-amber-200 bg-amber-50">
             <AlertCircle className="h-4 w-4 text-amber-600" />
@@ -326,7 +326,7 @@ export default function JournalEditor({
           </Alert>
         )}
 
-        <div className="relative">
+        <div className="relative w-full">
           <BubbleMenu
             editor={editor}
             tippyOptions={{
@@ -528,7 +528,7 @@ export default function JournalEditor({
 
           <EditorContent
             editor={editor}
-            className="editor-content focus-within:outline-none"
+            className="editor-content bg-muted/20 border p-4 focus-within:outline-none"
           />
         </div>
       </div>
