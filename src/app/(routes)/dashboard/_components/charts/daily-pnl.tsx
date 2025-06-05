@@ -65,6 +65,7 @@ export function DailyPnl({ pnlData = [] }: DailyPnlProps) {
                 tickLine={false}
                 tickFormatter={(value) => `$${value}`}
                 interval="preserveStartEnd"
+                className="hidden sm:block"
               />
               <Tooltip
                 content={

@@ -13,10 +13,10 @@ export default function DailyPnlWidget({ pnlData }: { pnlData: PnlData[] }) {
   const isPositive = totalPnl >= 0;
 
   return (
-    <Card className="w-full">
+    <Card className="w-full py-0 sm:py-6 border-0 md:border shadow-none sm:shadow-sm lg:col-span-2 ">
       {/* Change from grid to flex-col on mobile, then grid on larger screens */}
       <div className="flex flex-col lg:grid lg:grid-cols-4">
-        <CardHeader className="lg:col-span-1">
+        <CardHeader className="lg:col-span-1 px-0 sm:px-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="space-y-0.5 w-full">
               <h2 className="text-xs mb-4 sm:mb-6 uppercase text-muted-foreground tracking-wider font-mono">
@@ -60,7 +60,7 @@ export default function DailyPnlWidget({ pnlData }: { pnlData: PnlData[] }) {
             </div>
           </div>
         </CardHeader>
-        <CardContent className="lg:col-span-3 pt-0 px-4 sm:px-6 lg:pt-6">
+        <CardContent className="lg:col-span-3 pt-0 px-0  sm:px-4 lg:pt-6">
           <DailyPnl pnlData={pnlData} />
         </CardContent>
       </div>

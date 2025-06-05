@@ -1,3 +1,4 @@
+"use client";
 import {
   Card,
   CardContent,
@@ -5,51 +6,70 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-} from "@/components/ui/carousel";
+
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Pagination } from "swiper/modules";
 
 export default function NewsEvent() {
   return (
-    <Card className="border-none shadow-none col-span-2 ">
-      <CardHeader className="md:px-0">
+    <Card className="border-none shadow-none lg:col-span-2 ">
+      <CardHeader className="px-0">
         <CardTitle>Upcoming Events(June 3)</CardTitle>
       </CardHeader>
-      <CardContent className="md:px-0">
-        <Carousel className="w-full border-x-2 border-dashed">
-          <CarouselContent className="-ml-1">
-            {forexFactoryNewsMock.map((news, index) => (
-              <CarouselItem
-                key={`${news.country}-${index}`}
-                className="pl-1 basis-1/2 sm:basis-1/3 lg:basis-1/2"
+      <CardContent className="px-0">
+        <div className="w-full lg:col-span-3 lg:border-x-2 border-dashed sm:py-4 overflow-x-hidden">
+          <Swiper
+            slidesPerView={1}
+            spaceBetween={10}
+            breakpoints={{
+              320: {
+                slidesPerView: 1.5,
+                spaceBetween: 10,
+              },
+              480: {
+                slidesPerView: 2,
+                spaceBetween: 12,
+              },
+              640: {
+                slidesPerView: 3,
+                spaceBetween: 16,
+              },
+            }}
+            modules={[Pagination]}
+            className="w-full h-full px-2"
+          >
+            {forexFactoryNewsMock.map((news) => (
+              <SwiperSlide
+                className="md:shadow  shadow-black md:border"
+                key={news.id}
               >
-                <div className="p-1 h-full hover:cursor-pointer">
+                <div className="p-1  h-full hover:cursor-pointer">
                   <Card className="h-full gap-2 relative bg-card/50 backdrop-blur-sm border-border/50 hover:border-primary/20 hover:bg-muted/10 transition-colors">
                     <div
                       className={`absolute right-0 top-0 border w-14 h-4 ${
                         news.impact === "High" ? "bg-destructive" : "bg-muted"
                       }`}
                     />
+
                     <CardHeader className="mb-0">
-                      <CardTitle className="text-md mb-0">
+                      <CardTitle className="text-sm sm:text-md mb-0 line-clamp-2">
                         {news.event}
                       </CardTitle>
                     </CardHeader>
 
-                    <CardContent className=" flex items-start h-full">
-                      <p className="text-muted-foreground text-sm">
+                    <CardContent className="flex items-start h-full">
+                      <p className="text-muted-foreground text-xs md:text-base line-clamp-3">
                         {news.description}
                       </p>
                     </CardContent>
-                    <CardFooter className="">hello world</CardFooter>
+
+                    <CardFooter>hello world</CardFooter>
                   </Card>
                 </div>
-              </CarouselItem>
+              </SwiperSlide>
             ))}
-          </CarouselContent>
-        </Carousel>
+          </Swiper>
+        </div>
       </CardContent>
     </Card>
   );
@@ -57,6 +77,7 @@ export default function NewsEvent() {
 
 const forexFactoryNewsMock = [
   {
+    id: "1",
     country: "United States",
     currency: "USD",
     event: "Non-Farm Employment Change",
@@ -69,6 +90,7 @@ const forexFactoryNewsMock = [
       "Measures the change in the number of employed people during the previous month, excluding the farming industry. High employment is bullish for the USD.",
   },
   {
+    id: "2",
     country: "Eurozone",
     currency: "EUR",
     event: "ECB Interest Rate Decision",
@@ -81,6 +103,7 @@ const forexFactoryNewsMock = [
       "The ECB’s rate decision impacts the value of the euro. A higher rate tends to be bullish for the currency.",
   },
   {
+    id: "3",
     country: "United Kingdom",
     currency: "GBP",
     event: "CPI y/y",
@@ -93,6 +116,7 @@ const forexFactoryNewsMock = [
       "Consumer Price Index measures the change in the price of goods and services. It's the main indicator of inflation.",
   },
   {
+    id: "4",
     country: "Australia",
     currency: "AUD",
     event: "Retail Sales m/m",
@@ -105,6 +129,7 @@ const forexFactoryNewsMock = [
       "Monthly change in the total value of retail sales. Indicates consumer spending strength.",
   },
   {
+    id: "5",
     country: "Japan",
     currency: "JPY",
     event: "BOJ Press Conference",

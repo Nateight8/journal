@@ -1,9 +1,8 @@
-"use client"; // <===== REQUIRED
+"use client";
 
 import React, { JSX } from "react";
 
-// Swiper components, modules and styles
-import { Autoplay, Navigation, Pagination } from "swiper/modules";
+import { Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -22,7 +21,7 @@ import { Card, CardContent } from "@/components/ui/card";
 
 export default function Performance() {
   return (
-    <div className="w-full col-span-3 lg:border-x-2 border-dashed sm:py-4 overflow-x-hidden">
+    <div className="w-full lg:col-span-3 lg:border-x-2 border-dashed sm:py-4 overflow-x-hidden">
       <Swiper
         slidesPerView={1}
         spaceBetween={10}
