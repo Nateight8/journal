@@ -86,7 +86,7 @@ export default function AppNavbar() {
   return (
     <>
       <nav className="sticky w-full top-0 z-40 backdrop-blur-3xl border-b">
-        <div className="flex h-16 lg:h-[72px] w-full items-center px-4 lg:px-8">
+        <div className="flex h-fit lg:h-[72px] w-full items-center px-4 lg:px-8">
           {/* Mobile Menu Button - Left */}
           <div className="lg:hidden flex items-center h-full">
             <Button
@@ -184,7 +184,7 @@ export default function AppNavbar() {
             <div className="h-full flex items-center relative" ref={profileRef}>
               <Button
                 variant="ghost"
-                className="h-full flex items-center px-4 lg:px-6 text-sm font-medium tracking-wide hover:bg-muted transition-colors rounded-none"
+                className="h-full flex items-center -mr-4 px-4 lg:px-6 text-sm font-medium tracking-wide hover:bg-muted transition-colors rounded-none"
                 onClick={() => setIsProfileOpen(!isProfileOpen)}
               >
                 {/* Profile text hidden on mobile */}
@@ -275,7 +275,7 @@ export default function AppNavbar() {
             }}
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-8 border-b">
+            <div className="flex items-center justify-between p-4 md:p-8 border-b">
               <Link
                 href="/"
                 className="flex items-center"

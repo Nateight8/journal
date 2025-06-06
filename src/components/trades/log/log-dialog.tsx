@@ -7,6 +7,7 @@ import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { cn } from "@/lib/utils";
 import LogTrade from "@/components/trades/log/log-trade";
 import { LogDialogProvider } from "./log-dialog-context";
+import { Plus } from "lucide-react";
 
 function DialogContent({
   className,
@@ -40,7 +41,10 @@ export default function LogDialog() {
     <LogDialogProvider onClose={handleClose}>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
-          <Button variant="outline">Journal</Button>
+          <Button variant="outline">
+            <Plus className="h-4 w-4" />
+            <span className="hidden md:inline">Log Trade</span>
+          </Button>
         </DialogTrigger>
         <DialogContent className="md:max-w-sm px-2 py-4">
           <LogTrade />
