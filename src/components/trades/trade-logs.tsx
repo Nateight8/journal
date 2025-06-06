@@ -3,7 +3,7 @@
 import type React from "react";
 
 import { cn } from "@/lib/utils";
-import { Info, Plus } from "lucide-react";
+import { Info } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
