@@ -1,9 +1,10 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+/* @import url("https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&display=swap"); */
 
 @custom-variant dark (&:is(.dark *));
 
-:root {
+.dark {
   --background: oklch(1 0 0);
   --foreground: oklch(0.141 0.005 285.823);
   --card: oklch(1 0 0);
@@ -38,15 +39,60 @@
   --sidebar-border: oklch(0.92 0.004 286.32);
   --sidebar-ring: oklch(0.871 0.006 286.286);
 
-  --chart-1: 12 76% 61%;
-  --chart-2: 173 58% 39%;
-  --chart-3: 197 37% 24%;
-  --chart-4: 43 74% 66%;
-  --chart-5: 27 87% 67%;
-  --chart-6: 163 58% 41%;
-  /* --chart-6: oklch(0.696 0.17 162.48); */
+  --chart-1: oklch(0.606 0.25 292.717);
+  --chart-2: oklch(0.541 0.281 293.009);
+  --chart-3: oklch(0.274 0.006 286.033);
+  --chart-4: oklch(0.645 0.246 16.439);
+  --chart-5: oklch(0.586 0.253 17.585);
+
+  /* Sticky Note Colors - Dark Mode */
+  --sticky-note-bg: oklch(0.2 0.02 85);
+  --sticky-note-border: oklch(0.3 0.02 85);
+  --sticky-note-text: oklch(0.9 0 0);
+  --sticky-note-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  
+  /* Color variants */
+  --sticky-yellow-bg: oklch(0.2 0.05 85);
+  --sticky-yellow-border: oklch(0.3 0.05 85);
+  
+  --sticky-blue-bg: oklch(0.2 0.05 220);
+  --sticky-blue-border: oklch(0.3 0.05 220);
+  
+  --sticky-pink-bg: oklch(0.25 0.05 350);
+  --sticky-pink-border: oklch(0.35 0.05 350);
+  
+  --sticky-green-bg: oklch(0.2 0.05 120);
+  --sticky-green-border: oklch(0.3 0.05 120);
+  
+  --sticky-purple-bg: oklch(0.2 0.05 280);
+  --sticky-purple-border: oklch(0.3 0.05 280);
+
+  --sticky-blue-bg: oklch(0.2 0.03 230);
+  --sticky-blue-border: oklch(0.3 0.03 230);
+  --sticky-blue-shadow: rgba(100, 149, 237, 0.1);
+
+  --sticky-green-bg: oklch(0.2 0.05 145);
+  --sticky-green-border: oklch(0.3 0.05 145);
+  --sticky-green-shadow: rgba(144, 238, 144, 0.1);
+
+  --sticky-pink-bg: oklch(0.2 0.05 0);
+  --sticky-pink-border: oklch(0.3 0.05 0);
+  --sticky-pink-shadow: rgba(255, 182, 193, 0.1);
+
+  --sticky-purple-bg: oklch(0.2 0.05 300);
+  --sticky-purple-border: oklch(0.3 0.05 300);
+  --sticky-purple-shadow: rgba(221, 160, 221, 0.1);
+
+  --sticky-text: oklch(0.9 0.005 285);
+  --sticky-text-muted: oklch(0.7 0.005 285);
+
+  --paper-bg: oklch(0.15 0.01 285);
+  --paper-lines: oklch(0.25 0.02 285);
+  --paper-margin: oklch(0.3 0.05 0);
+  --paper-shadow: rgba(0, 0, 0, 0.3);
 }
-.dark {
+
+:root {
   --background: oklch(0.21 0.006 285.885);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.21 0.006 285.885);
@@ -80,18 +126,53 @@
   --sidebar-border: oklch(0.274 0.006 286.033);
   --sidebar-ring: oklch(0.442 0.017 285.786);
 
-  --chart-1: 12 76% 61%;
-  --chart-2: 173 58% 39%;
-  --chart-3: 197 37% 24%;
-  --chart-4: 43 74% 66%;
-  --chart-5: 27 87% 67%;
-  /* --chart-6: oklch(0.696 0.17 162.48); */
-  --chart-6: 163 58% 41%;
+  --chart-1: oklch(0.606 0.25 292.717);
+  --chart-2: oklch(0.541 0.281 293.009);
+  --chart-3: oklch(0.274 0.006 286.033);
+  --chart-4: oklch(0.645 0.246 16.439);
+  --chart-5: oklch(0.586 0.253 17.585);
+
+  /* Sticky Note Variables - Light Mode */
+  /* Sticky Note Colors - Light Mode */
+  --sticky-note-bg: oklch(0.98 0.02 85);
+  --sticky-note-border: oklch(0.9 0.02 85);
+  --sticky-note-text: oklch(0.2 0 0);
+  --sticky-note-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  
+  /* Color variants */
+  --sticky-yellow-bg: oklch(0.98 0.1 85);
+  --sticky-yellow-border: oklch(0.9 0.1 85);
+  --sticky-yellow-shadow: rgba(255, 236, 153, 0.5);
+
+  --sticky-blue-bg: oklch(0.95 0.1 220);
+  --sticky-blue-border: oklch(0.85 0.1 220);
+  --sticky-blue-shadow: rgba(173, 216, 230, 0.5);
+
+  --sticky-pink-bg: oklch(0.98 0.1 350);
+  --sticky-pink-border: oklch(0.9 0.1 350);
+  --sticky-pink-shadow: rgba(255, 182, 193, 0.5);
+
+  --sticky-green-bg: oklch(0.95 0.1 120);
+  --sticky-green-border: oklch(0.85 0.1 120);
+  --sticky-green-shadow: rgba(152, 251, 152, 0.5);
+
+  --sticky-purple-bg: oklch(0.95 0.1 280);
+  --sticky-purple-border: oklch(0.85 0.1 280);
+  --sticky-purple-shadow: rgba(221, 160, 221, 0.5);
+
+  --sticky-text: oklch(0.2 0.005 285);
+  --sticky-text-muted: oklch(0.4 0.005 285);
+
+  --paper-bg: oklch(0.99 0 0);
+  --paper-lines: oklch(0.9 0.02 230);
+  --paper-margin: oklch(0.9 0.05 0);
+  --paper-shadow: rgba(0, 0, 0, 0.1);
 }
 
 @theme inline {
   --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-handwriting: "Kalam", cursive;
 
   --color-border: var(--border);
   --color-input: var(--input);
@@ -161,10 +242,249 @@
   }
 }
 
+/* Sticky Note Styles */
+/* Color Picker Styles */
+.note-color-picker {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem 0;
+  border-top: 1px solid var(--border);
+}
+
+.note-color-option {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: transform 0.2s, border-color 0.2s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.note-color-option:hover {
+  transform: scale(1.1);
+}
+
+.note-color-option.active {
+  border-color: var(--foreground);
+  transform: scale(1.1);
+}
+
+/* Sticky Note Color Classes */
+.sticky-note {
+  position: relative;
+  transition: all 0.2s ease;
+  transform-origin: center;
+  background-color: var(--sticky-note-bg);
+  border-color: var(--sticky-note-border);
+  color: var(--sticky-note-text);
+  box-shadow: 0 4px 6px var(--sticky-note-shadow);
+}
+
+.sticky-note.yellow {
+  --sticky-note-bg: var(--sticky-yellow-bg);
+  --sticky-note-border: var(--sticky-yellow-border);
+}
+
+.sticky-note.blue {
+  --sticky-note-bg: var(--sticky-blue-bg);
+  --sticky-note-border: var(--sticky-blue-border);
+}
+
+.sticky-note.pink {
+  --sticky-note-bg: var(--sticky-pink-bg);
+  --sticky-note-border: var(--sticky-pink-border);
+}
+
+.sticky-note.green {
+  --sticky-note-bg: var(--sticky-green-bg);
+  --sticky-note-border: var(--sticky-green-border);
+}
+
+.sticky-note.purple {
+  --sticky-note-bg: var(--sticky-purple-bg);
+  --sticky-note-border: var(--sticky-purple-border);
+}
+
+.sticky-note-yellow {
+  background-color: var(--sticky-yellow-bg);
+  border-color: var(--sticky-yellow-border);
+  box-shadow: 0 4px 6px var(--sticky-yellow-shadow);
+}
+
+.sticky-note-blue {
+  background-color: var(--sticky-blue-bg);
+  border-color: var(--sticky-blue-border);
+  box-shadow: 0 4px 6px var(--sticky-blue-shadow);
+}
+
+.sticky-note-green {
+  background-color: var(--sticky-green-bg);
+  border-color: var(--sticky-green-border);
+  box-shadow: 0 4px 6px var(--sticky-green-shadow);
+}
+
+.sticky-note-pink {
+  background-color: var(--sticky-pink-bg);
+  border-color: var(--sticky-pink-border);
+  box-shadow: 0 4px 6px var(--sticky-pink-shadow);
+}
+
+.sticky-note-purple {
+  background-color: var(--sticky-purple-bg);
+  border-color: var(--sticky-purple-border);
+  box-shadow: 0 4px 6px var(--sticky-purple-shadow);
+}
+
+.sticky-note-text {
+  color: var(--sticky-text);
+  font-family: var(--font-handwriting);
+}
+
+.sticky-note-text-muted {
+  color: var(--sticky-text-muted);
+  font-family: var(--font-handwriting);
+}
+
+.sticky-note-texture {
+  background-image: radial-gradient(
+      circle at 20% 50%,
+      rgba(120, 119, 109, 0.1) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 80% 20%,
+      rgba(120, 119, 109, 0.1) 0%,
+      transparent 50%
+    );
+}
+
+.sticky-note-tape {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  width: 4rem;
+  height: 1.5rem;
+  background-color: rgba(255, 255, 255, 0.6);
+  border-radius: 0.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  z-index: 1;
+}
+
+.sticky-note-fold {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 1.5rem;
+  height: 1.5rem;
+  background-color: rgba(255, 255, 255, 0.3);
+  transform: rotate(45deg) translate(50%, 50%);
+}
+
+/* Paper Editor Styles */
+.paper-texture {
+  background-color: var(--paper-bg);
+  background-image: radial-gradient(
+      circle at 20% 50%,
+      rgba(255, 255, 255, 0.02) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 80% 20%,
+      rgba(255, 255, 255, 0.02) 0%,
+      transparent 50%
+    );
+  box-shadow: 0 4px 6px var(--paper-shadow), 0 1px 2px var(--paper-shadow);
+  border: 1px solid var(--border);
+  color: var(--sticky-text);
+}
+
+.paper-lines {
+  background-image: linear-gradient(
+      transparent 0px,
+      transparent 24px,
+      var(--paper-lines) 25px,
+      transparent 26px
+    ),
+    linear-gradient(
+      90deg,
+      transparent 0px,
+      transparent 58px,
+      var(--paper-margin) 58px,
+      transparent 60px
+    );
+  background-size: 100% 26px, 100% 60px;
+  background-position: 0 0, 0 0;
+  background-attachment: local;
+}
+
+.handwriting-font {
+  font-family: var(--font-handwriting);
+}
+
+.handwriting-content {
+  font-family: var(--font-handwriting);
+  line-height: 26px;
+  color: var(--sticky-text);
+}
+
+.handwriting-content h1,
+.handwriting-content h2,
+.handwriting-content h3,
+.handwriting-content h4,
+.handwriting-content h5,
+.handwriting-content h6 {
+  color: var(--sticky-text);
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+}
+
+.handwriting-content p,
+.handwriting-content ul,
+.handwriting-content ol {
+  margin-bottom: 1em;
+}
+
+.handwriting-content a {
+  color: oklch(0.7 0.1 230);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.handwriting-content h1 {
+  font-family: var(--font-handwriting);
+  font-weight: 700;
+  margin-top: 0;
+}
+
+.handwriting-content h2 {
+  font-family: var(--font-handwriting);
+  font-weight: 700;
+}
+
+.handwriting-content p,
+.handwriting-content li {
+  font-family: var(--font-handwriting);
+  font-weight: 400;
+}
+
+/* Floating Toolbar Styles */
+.floating-toolbar {
+  position: fixed;
+  z-index: 50;
+  background-color: rgba(255, 255, 255, 0.95);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(8px);
+}
+
 /* TipTap Editor Styles - ShadCN/UI Integration */
 .editor-content {
-  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial,
-    "Noto Sans", sans-serif;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
   line-height: 1.6;
   color: hsl(var(--muted-foreground));
 }
@@ -290,7 +610,10 @@
   border-color: hsl(var(--primary));
 }
 
-.editor-content .editor-task-item > label input[type="checkbox"]:checked::after {
+.editor-content
+  .editor-task-item
+  > label
+  input[type="checkbox"]:checked::after {
   content: "✓";
   position: absolute;
   top: 50%;
@@ -349,6 +672,51 @@
 }
 
 /* Selection styles */
+/* Drag and Drop Styles */
+[data-rbd-draggable-context-id] {
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  will-change: transform;
+}
+
+[data-rbd-drag-handle-context-id] {
+  cursor: grab;
+  touch-action: none;
+}
+
+[data-rbd-drag-handle-context-id]:active {
+  cursor: grabbing;
+}
+
+[data-rbd-drag-placeholder-context-id] {
+  opacity: 0.8;
+  background: rgba(99, 102, 241, 0.1);
+  border: 2px dashed rgba(99, 102, 241, 0.8) !important;
+  border-radius: 0.5rem;
+}
+
+[data-rbd-draggable-id]:not([data-rbd-dragged-display='fixed']) {
+  transition: transform 0.3s ease, opacity 0.2s ease;
+}
+
+/* Improve drag handle appearance */
+.drag-handle {
+  transition: background-color 0.2s ease;
+  opacity: 0;
+}
+
+.drag-handle:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.dark .drag-handle:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Smooth transitions for the editor */
+.editor-content .ProseMirror {
+  transition: background-color 0.2s ease;
+}
+
 .editor-content .ProseMirror ::selection {
   background: hsl(var(--foreground));
   color: hsl(var(--background));
@@ -369,7 +737,8 @@
 
 /* Smooth transitions */
 .editor-content * {
-  transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+  transition: color 0.2s ease, background-color 0.2s ease,
+    border-color 0.2s ease;
 }
 
 /* Responsive adjustments */
