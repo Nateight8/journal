@@ -1,7 +1,9 @@
 "use client";
 
+import type React from "react";
+
 import { cn } from "@/lib/utils";
-import { Info } from "lucide-react";
+import { Info, Plus } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -38,11 +40,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  ColumnDef,
-  ColumnFiltersState,
-  PaginationState,
-  SortingState,
-  VisibilityState,
+  type ColumnDef,
+  type ColumnFiltersState,
+  type PaginationState,
+  type SortingState,
+  type VisibilityState,
   flexRender,
   getCoreRowModel,
   getFacetedUniqueValues,
@@ -90,11 +92,11 @@ import {
 } from "@/components/ui/popover";
 import { Label } from "@/components/ui/label";
 import { Calendar } from "@/components/ui/calendar";
-import { DateRange } from "react-day-picker";
+import type { DateRange } from "react-day-picker";
 import { createPortal } from "react-dom";
 import LogDialog from "./log/log-dialog";
 import { useRouter } from "next/navigation";
-import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 export interface Trade {
   id: string;
@@ -609,6 +611,8 @@ export default function TradeLogs({ trades }: TradeLogsProps) {
     },
   });
   const inputRef = useRef<HTMLInputElement>(null);
+  const mobileSearchRef = useRef<HTMLDivElement>(null);
+  const [isMobileSearchExpanded, setIsMobileSearchExpanded] = useState(false);
 
   const [sorting, setSorting] = useState<SortingState>([
     {
@@ -690,243 +694,335 @@ export default function TradeLogs({ trades }: TradeLogsProps) {
     });
   };
 
+  // Click outside to close mobile search
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        mobileSearchRef.current &&
+        !mobileSearchRef.current.contains(event.target as Node)
+      ) {
+        setIsMobileSearchExpanded(false);
+      }
+    };
+
+    if (isMobileSearchExpanded) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isMobileSearchExpanded]);
+
   return (
     <div className="space-y-4">
       {/* Actions */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        {/* Left side */}
-        <div className="flex items-center gap-3">
-          {/* Filter by symbol */}
-          <div className="relative">
-            <Input
-              id={`${id}-input`}
-              ref={inputRef}
-              className={cn(
-                "peer min-w-60 ps-9 bg-background bg-gradient-to-br from-accent/60 to-accent",
-                Boolean(table.getColumn("symbol")?.getFilterValue()) && "pe-9"
-              )}
-              value={
-                (table.getColumn("symbol")?.getFilterValue() ?? "") as string
-              }
-              onChange={(e) =>
-                table.getColumn("symbol")?.setFilterValue(e.target.value)
-              }
-              placeholder="Search by symbol"
-              type="text"
-              aria-label="Search by symbol"
-            />
-            <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-2 text-muted-foreground/60 peer-disabled:opacity-50">
-              <RiSearch2Line size={20} aria-hidden="true" />
-            </div>
-            {Boolean(table.getColumn("symbol")?.getFilterValue()) && (
-              <button
-                className="absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-lg text-muted-foreground/60 outline-offset-2 transition-colors hover:text-foreground focus:z-10 focus-visible:outline-2 focus-visible:outline-ring/70 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
-                aria-label="Clear filter"
-                onClick={() => {
-                  table.getColumn("symbol")?.setFilterValue("");
-                  if (inputRef.current) {
-                    inputRef.current.focus();
-                  }
-                }}
+      <div className="flex items-center justify-between gap-3">
+        {/* Left side - Search */}
+        <div className="flex items-center">
+          {/* Mobile Search Button/Input */}
+          <div className="md:hidden" ref={mobileSearchRef}>
+            {!isMobileSearchExpanded ? (
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => setIsMobileSearchExpanded(true)}
+                aria-label="Search"
               >
-                <RiCloseCircleLine size={16} aria-hidden="true" />
-              </button>
+                <RiSearch2Line className="h-4 w-4" />
+              </Button>
+            ) : (
+              <div className="flex items-center gap-2">
+                <div className="relative w-64">
+                  <Input
+                    id={`${id}-mobile-input`}
+                    className={cn(
+                      "peer ps-9 bg-background bg-gradient-to-br from-accent/60 to-accent",
+                      Boolean(table.getColumn("symbol")?.getFilterValue()) &&
+                        "pe-9"
+                    )}
+                    value={
+                      (table.getColumn("symbol")?.getFilterValue() ??
+                        "") as string
+                    }
+                    onChange={(e) =>
+                      table.getColumn("symbol")?.setFilterValue(e.target.value)
+                    }
+                    placeholder="Search by symbol"
+                    type="text"
+                    aria-label="Search by symbol"
+                    autoFocus
+                  />
+                  <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-2 text-muted-foreground/60 peer-disabled:opacity-50">
+                    <RiSearch2Line size={20} aria-hidden="true" />
+                  </div>
+                  {Boolean(table.getColumn("symbol")?.getFilterValue()) && (
+                    <button
+                      className="absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-lg text-muted-foreground/60 outline-offset-2 transition-colors hover:text-foreground focus:z-10 focus-visible:outline-2 focus-visible:outline-ring/70 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
+                      aria-label="Clear filter"
+                      onClick={() => {
+                        table.getColumn("symbol")?.setFilterValue("");
+                      }}
+                    >
+                      <RiCloseCircleLine size={16} aria-hidden="true" />
+                    </button>
+                  )}
+                </div>
+              </div>
             )}
           </div>
 
-          {/* Filter button */}
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline">
-                <RiFilter3Line
-                  className="size-5 -ms-1.5 text-muted-foreground/60"
-                  size={20}
-                  aria-hidden="true"
-                />
-                Filters
-                {(filters.direction.length > 0 ||
-                  filters.dateRange ||
-                  filters.efficiency.min !== undefined ||
-                  filters.efficiency.max !== undefined) && (
-                  <span className="-me-1 ms-3 inline-flex h-5 max-h-full items-center rounded border border-border bg-background px-1 font-[inherit] text-[0.625rem] font-medium text-muted-foreground/70">
-                    Active
-                  </span>
+          {/* Desktop Search - always visible on desktop */}
+          <div className="hidden md:block">
+            <div className="relative">
+              <Input
+                id={`${id}-input`}
+                ref={inputRef}
+                className={cn(
+                  "peer min-w-60 ps-9 bg-background bg-gradient-to-br from-accent/60 to-accent",
+                  Boolean(table.getColumn("symbol")?.getFilterValue()) && "pe-9"
                 )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto min-w-[300px] p-4" align="start">
-              <div className="space-y-4">
-                {/* Direction filter */}
-                <div className="space-y-2">
-                  <Label className="text-xs font-medium uppercase text-muted-foreground/60">
-                    Direction
-                  </Label>
+                value={
+                  (table.getColumn("symbol")?.getFilterValue() ?? "") as string
+                }
+                onChange={(e) =>
+                  table.getColumn("symbol")?.setFilterValue(e.target.value)
+                }
+                placeholder="Search by symbol"
+                type="text"
+                aria-label="Search by symbol"
+              />
+              <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-2 text-muted-foreground/60 peer-disabled:opacity-50">
+                <RiSearch2Line size={20} aria-hidden="true" />
+              </div>
+              {Boolean(table.getColumn("symbol")?.getFilterValue()) && (
+                <button
+                  className="absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-lg text-muted-foreground/60 outline-offset-2 transition-colors hover:text-foreground focus:z-10 focus-visible:outline-2 focus-visible:outline-ring/70 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
+                  aria-label="Clear filter"
+                  onClick={() => {
+                    table.getColumn("symbol")?.setFilterValue("");
+                    if (inputRef.current) {
+                      inputRef.current.focus();
+                    }
+                  }}
+                >
+                  <RiCloseCircleLine size={16} aria-hidden="true" />
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Right side - Filter and Journal buttons */}
+        {!isMobileSearchExpanded && (
+          <div className="flex items-center gap-3">
+            {/* Delete button */}
+            {table.getSelectedRowModel().rows.length > 0 && (
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button className="ml-auto" variant="outline">
+                    <RiDeleteBinLine
+                      className="-ms-1 opacity-60"
+                      size={16}
+                      aria-hidden="true"
+                    />
+                    <span className="hidden sm:inline">Delete</span>
+                    <span className="-me-1 ms-1 inline-flex h-5 max-h-full items-center rounded border border-border bg-background px-1 font-[inherit] text-[0.625rem] font-medium text-muted-foreground/70">
+                      {table.getSelectedRowModel().rows.length}
+                    </span>
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <div className="flex flex-col gap-2 max-sm:items-center sm:flex-row sm:gap-4">
+                    <div
+                      className="flex size-9 shrink-0 items-center justify-center rounded-full border border-border"
+                      aria-hidden="true"
+                    >
+                      <RiErrorWarningLine className="opacity-80" size={16} />
+                    </div>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        Are you absolutely sure?
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This action cannot be undone. This will permanently
+                        delete {table.getSelectedRowModel().rows.length}{" "}
+                        selected{" "}
+                        {table.getSelectedRowModel().rows.length === 1
+                          ? "trade"
+                          : "trades"}
+                        .
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                  </div>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={() => {}}>
+                      Delete
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            )}
+
+            {/* Filter button */}
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className="relative md:px-3 md:gap-2">
+                  <RiFilter3Line
+                    className="size-4 text-muted-foreground/60"
+                    aria-hidden="true"
+                  />
+                  <span className="hidden md:inline">Filters</span>
+                  {(filters.direction.length > 0 ||
+                    filters.dateRange ||
+                    filters.efficiency.min !== undefined ||
+                    filters.efficiency.max !== undefined) && (
+                    <>
+                      <span className="absolute -right-1 -top-1 flex h-3 w-3 md:hidden">
+                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary/75 opacity-75"></span>
+                        <span className="relative inline-flex h-3 w-3 rounded-full bg-primary"></span>
+                      </span>
+                      <span className="hidden md:inline-flex items-center justify-center h-5 min-w-5 px-1 ml-2 text-xs font-medium rounded-full bg-primary text-primary-foreground">
+                        {[
+                          filters.direction.length,
+                          filters.dateRange ? 1 : 0,
+                          filters.efficiency.min !== undefined ? 1 : 0,
+                          filters.efficiency.max !== undefined ? 1 : 0,
+                        ].reduce((a, b) => a + b, 0)}
+                      </span>
+                    </>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent
+                className="w-auto min-w-[300px] p-4"
+                align="start"
+              >
+                <div className="space-y-4">
+                  {/* Direction filter */}
                   <div className="space-y-2">
-                    {["Long", "Short"].map((dir) => (
-                      <div key={dir} className="flex items-center gap-2">
-                        <Checkbox
-                          id={`${id}-${dir}`}
-                          checked={filters.direction.includes(
-                            dir as "Long" | "Short"
-                          )}
-                          onCheckedChange={(checked) => {
+                    <Label className="text-xs font-medium uppercase text-muted-foreground/60">
+                      Direction
+                    </Label>
+                    <div className="space-y-2">
+                      {["Long", "Short"].map((dir) => (
+                        <div key={dir} className="flex items-center gap-2">
+                          <Checkbox
+                            id={`${id}-${dir}`}
+                            checked={filters.direction.includes(
+                              dir as "Long" | "Short"
+                            )}
+                            onCheckedChange={(checked) => {
+                              setFilters((prev) => ({
+                                ...prev,
+                                direction: checked
+                                  ? [...prev.direction, dir as "Long" | "Short"]
+                                  : prev.direction.filter((d) => d !== dir),
+                              }));
+                            }}
+                          />
+                          <Label
+                            htmlFor={`${id}-${dir}`}
+                            className="flex grow justify-between gap-2 font-normal"
+                          >
+                            {dir === "Long" ? "BUY" : "SELL"}
+                          </Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Date range filter */}
+                  <div className="space-y-2">
+                    <Label className="text-xs font-medium uppercase text-muted-foreground/60">
+                      Date Range
+                    </Label>
+                    <Calendar
+                      mode="range"
+                      selected={filters.dateRange}
+                      onSelect={(range) =>
+                        setFilters((prev) => ({ ...prev, dateRange: range }))
+                      }
+                      numberOfMonths={2}
+                      className="rounded-md border"
+                    />
+                  </div>
+
+                  {/* Efficiency filter */}
+                  <div className="space-y-2">
+                    <Label className="text-xs font-medium uppercase text-muted-foreground/60">
+                      Efficiency
+                    </Label>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="space-y-1">
+                        <Label htmlFor={`${id}-min-eff`} className="text-xs">
+                          Min %
+                        </Label>
+                        <Input
+                          id={`${id}-min-eff`}
+                          type="number"
+                          placeholder="Min"
+                          value={filters.efficiency.min ?? ""}
+                          onChange={(e) =>
                             setFilters((prev) => ({
                               ...prev,
-                              direction: checked
-                                ? [...prev.direction, dir as "Long" | "Short"]
-                                : prev.direction.filter((d) => d !== dir),
-                            }));
-                          }}
+                              efficiency: {
+                                ...prev.efficiency,
+                                min: e.target.value
+                                  ? Number(e.target.value)
+                                  : undefined,
+                              },
+                            }))
+                          }
                         />
-                        <Label
-                          htmlFor={`${id}-${dir}`}
-                          className="flex grow justify-between gap-2 font-normal"
-                        >
-                          {dir === "Long" ? "BUY" : "SELL"}
-                        </Label>
                       </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Date range filter */}
-                <div className="space-y-2">
-                  <Label className="text-xs font-medium uppercase text-muted-foreground/60">
-                    Date Range
-                  </Label>
-                  <Calendar
-                    mode="range"
-                    selected={filters.dateRange}
-                    onSelect={(range) =>
-                      setFilters((prev) => ({ ...prev, dateRange: range }))
-                    }
-                    numberOfMonths={2}
-                    className="rounded-md border"
-                  />
-                </div>
-
-                {/* Efficiency filter */}
-                <div className="space-y-2">
-                  <Label className="text-xs font-medium uppercase text-muted-foreground/60">
-                    Efficiency
-                  </Label>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="space-y-1">
-                      <Label htmlFor={`${id}-min-eff`} className="text-xs">
-                        Min %
-                      </Label>
-                      <Input
-                        id={`${id}-min-eff`}
-                        type="number"
-                        placeholder="Min"
-                        value={filters.efficiency.min ?? ""}
-                        onChange={(e) =>
-                          setFilters((prev) => ({
-                            ...prev,
-                            efficiency: {
-                              ...prev.efficiency,
-                              min: e.target.value
-                                ? Number(e.target.value)
-                                : undefined,
-                            },
-                          }))
-                        }
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <Label htmlFor={`${id}-max-eff`} className="text-xs">
-                        Max %
-                      </Label>
-                      <Input
-                        id={`${id}-max-eff`}
-                        type="number"
-                        placeholder="Max"
-                        value={filters.efficiency.max ?? ""}
-                        onChange={(e) =>
-                          setFilters((prev) => ({
-                            ...prev,
-                            efficiency: {
-                              ...prev.efficiency,
-                              max: e.target.value
-                                ? Number(e.target.value)
-                                : undefined,
-                            },
-                          }))
-                        }
-                      />
+                      <div className="space-y-1">
+                        <Label htmlFor={`${id}-max-eff`} className="text-xs">
+                          Max %
+                        </Label>
+                        <Input
+                          id={`${id}-max-eff`}
+                          type="number"
+                          placeholder="Max"
+                          value={filters.efficiency.max ?? ""}
+                          onChange={(e) =>
+                            setFilters((prev) => ({
+                              ...prev,
+                              efficiency: {
+                                ...prev.efficiency,
+                                max: e.target.value
+                                  ? Number(e.target.value)
+                                  : undefined,
+                              },
+                            }))
+                          }
+                        />
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                {/* Reset filters */}
-                {(filters.direction.length > 0 ||
-                  filters.dateRange ||
-                  filters.efficiency.min !== undefined ||
-                  filters.efficiency.max !== undefined) && (
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-center"
-                    onClick={resetFilters}
-                  >
-                    Reset filters
-                  </Button>
-                )}
-              </div>
-            </PopoverContent>
-          </Popover>
-        </div>
-        {/* Right side */}
-        <div className="flex items-center gap-3">
-          {/* Delete button */}
-          {table.getSelectedRowModel().rows.length > 0 && (
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button className="ml-auto" variant="outline">
-                  <RiDeleteBinLine
-                    className="-ms-1 opacity-60"
-                    size={16}
-                    aria-hidden="true"
-                  />
-                  Delete
-                  <span className="-me-1 ms-1 inline-flex h-5 max-h-full items-center rounded border border-border bg-background px-1 font-[inherit] text-[0.625rem] font-medium text-muted-foreground/70">
-                    {table.getSelectedRowModel().rows.length}
-                  </span>
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <div className="flex flex-col gap-2 max-sm:items-center sm:flex-row sm:gap-4">
-                  <div
-                    className="flex size-9 shrink-0 items-center justify-center rounded-full border border-border"
-                    aria-hidden="true"
-                  >
-                    <RiErrorWarningLine className="opacity-80" size={16} />
-                  </div>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>
-                      Are you absolutely sure?
-                    </AlertDialogTitle>
-                    <AlertDialogDescription>
-                      This action cannot be undone. This will permanently delete{" "}
-                      {table.getSelectedRowModel().rows.length} selected{" "}
-                      {table.getSelectedRowModel().rows.length === 1
-                        ? "trade"
-                        : "trades"}
-                      .
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
+                  {/* Reset filters */}
+                  {(filters.direction.length > 0 ||
+                    filters.dateRange ||
+                    filters.efficiency.min !== undefined ||
+                    filters.efficiency.max !== undefined) && (
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-center"
+                      onClick={resetFilters}
+                    >
+                      Reset filters
+                    </Button>
+                  )}
                 </div>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={() => {}}>
-                    Delete
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          )}
-          {/* log trade button */}
-          <LogDialog />
-        </div>
+              </PopoverContent>
+            </Popover>
+
+            {/* Journal button - icon only on mobile, full button on desktop */}
+            <LogDialog />
+          </div>
+        )}
       </div>
 
       {/* Table */}
