@@ -79,7 +79,7 @@ export default function MobileNotReady({
       setCurrentFeature((prev) => (prev + 1) % mobileFeatures.length);
     }, 3000);
     return () => clearInterval(interval);
-  }, []);
+  }, [mobileFeatures.length]);
 
   const handleNotifyClick = () => {
     setIsNotified(true);

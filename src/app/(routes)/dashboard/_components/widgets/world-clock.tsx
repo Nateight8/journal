@@ -144,7 +144,158 @@ function AnalogClock({ timezone, city, size = 120 }: ClockProps) {
   );
 }
 
+function useMarketSessions() {
+  type SessionKey = "Tokyo" | "London" | "New York" | "Market Closed";
+
+  interface SessionInfo {
+    current: SessionKey;
+    currentDescription: string;
+    currentCloses: string;
+    next: Exclude<SessionKey, "Market Closed">;
+    nextDescription: string;
+    nextOpens: string;
+  }
+
+  const [sessionInfo, setSessionInfo] = useState<SessionInfo>({
+    current: "Market Closed",
+    currentDescription: "",
+    currentCloses: "",
+    next: "Tokyo",
+    nextDescription: "",
+    nextOpens: "",
+  });
+
+  useEffect(() => {
+    const updateSessions = () => {
+      const now = new Date();
+
+      // Get current times in each timezone
+      const nyTime = new Date(
+        now.toLocaleString("en-US", { timeZone: "America/New_York" })
+      );
+      const londonTime = new Date(
+        now.toLocaleString("en-US", { timeZone: "Europe/London" })
+      );
+      const tokyoTime = new Date(
+        now.toLocaleString("en-US", { timeZone: "Asia/Tokyo" })
+      );
+
+      const nyHour = nyTime.getHours();
+      const londonHour = londonTime.getHours();
+      const tokyoHour = tokyoTime.getHours();
+
+      // Session characteristics
+      const sessionData = {
+        Tokyo: {
+          description: "Lower volatility, range trading",
+          opens: "9:00 AM JST",
+          closes: "5:00 PM JST",
+        },
+        London: {
+          description: "Moderate volatility, news-driven",
+          opens: "8:00 AM GMT",
+          closes: "4:30 PM GMT",
+        },
+        "New York": {
+          description: "Highest volume and volatility",
+          opens: "9:30 AM EST",
+          closes: "4:00 PM EST",
+        },
+      } as const;
+
+      // type SessionData = typeof sessionData;
+      // type SessionName = keyof SessionData;
+      let currentSession: SessionKey = "Market Closed";
+      let nextSession: Exclude<SessionKey, "Market Closed"> = "Tokyo";
+
+      // Check Tokyo session (9:00 - 17:00 JST)
+      const tokyoOpen = tokyoHour >= 9 && tokyoHour < 17;
+
+      // Check London session (8:00 - 16:30 GMT)
+      const londonOpen =
+        londonHour >= 8 &&
+        (londonHour < 16 ||
+          (londonHour === 16 && londonTime.getMinutes() < 30));
+
+      // Check New York session (9:30 - 16:00 EST)
+      const nyOpen =
+        nyHour >= 9 &&
+        (nyHour < 16 || (nyHour === 9 && nyTime.getMinutes() >= 30));
+
+      // Determine current session (priority order: NY > London > Tokyo)
+      if (nyOpen) {
+        currentSession = "New York";
+      } else if (londonOpen) {
+        currentSession = "London";
+      } else if (tokyoOpen) {
+        currentSession = "Tokyo";
+      } else {
+        currentSession = "Market Closed";
+      }
+
+      // Determine next session
+      if (currentSession === "Market Closed") {
+        // Find next opening session
+        if (tokyoHour < 9) {
+          nextSession = "Tokyo";
+        } else if (londonHour < 8) {
+          nextSession = "London";
+        } else if (nyHour < 9 || (nyHour === 9 && nyTime.getMinutes() < 30)) {
+          nextSession = "New York";
+        } else {
+          nextSession = "Tokyo"; // Next day
+        }
+      } else {
+        // Determine what comes after current session
+        if (currentSession === "Tokyo") {
+          nextSession = londonHour < 8 ? "London" : "New York";
+        } else if (currentSession === "London") {
+          nextSession =
+            nyHour < 9 || (nyHour === 9 && nyTime.getMinutes() < 30)
+              ? "New York"
+              : "Tokyo";
+        } else if (currentSession === "New York") {
+          nextSession = "Tokyo";
+        }
+      }
+
+      setSessionInfo({
+        current: currentSession,
+        currentDescription:
+          currentSession !== "Market Closed"
+            ? sessionData[currentSession as keyof typeof sessionData]
+                ?.description || ""
+            : "",
+        currentCloses:
+          currentSession !== "Market Closed"
+            ? sessionData[currentSession as keyof typeof sessionData]?.closes ||
+              ""
+            : "",
+        next: nextSession,
+        nextDescription: sessionData[nextSession]?.description || "",
+        nextOpens: sessionData[nextSession]?.opens || "",
+      });
+    };
+
+    updateSessions();
+    const timer = setInterval(updateSessions, 60000); // Update every minute
+
+    return () => clearInterval(timer);
+  }, []);
+
+  return sessionInfo;
+}
+
 export function WorldClockWidget() {
+  const {
+    current,
+    currentDescription,
+    currentCloses,
+    next,
+    nextDescription,
+    nextOpens,
+  } = useMarketSessions();
+
   return (
     <Card className="w-full">
       <CardHeader>
@@ -155,6 +306,105 @@ export function WorldClockWidget() {
           <AnalogClock timezone="America/New_York" city="New York" />
           <AnalogClock timezone="Europe/London" city="London" />
           <AnalogClock timezone="Asia/Tokyo" city="Tokyo" />
+        </div>
+        <div className="mt-6 space-y-4">
+          {/* Current Session */}
+          <div className="relative overflow-hidden border bg-gradient-to-br from-background via-background to-muted/30 p-6 shadow-sm">
+            <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-primary/10 to-primary/5 rounded-full -translate-y-8 translate-x-8"></div>
+            <div className="relative">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <div
+                    className={`w-3 h-3 rounded-full ${
+                      current === "Market Closed"
+                        ? "bg-red-500 animate-pulse"
+                        : "bg-green-500 animate-pulse"
+                    }`}
+                  ></div>
+                  <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                    Current Session
+                  </span>
+                </div>
+                <div className="text-xs px-2 py-1 rounded-full bg-muted/50 text-muted-foreground">
+                  {current !== "Market Closed" ? "LIVE" : "CLOSED"}
+                </div>
+              </div>
+
+              <div className="mb-2">
+                <h3
+                  className={`text-2xl font-bold ${
+                    current === "Market Closed"
+                      ? "text-red-500"
+                      : "text-green-600"
+                  }`}
+                >
+                  {current}
+                </h3>
+              </div>
+
+              {current !== "Market Closed" && (
+                <div className="space-y-2">
+                  <p className="text-sm text-muted-foreground font-medium">
+                    {currentDescription}
+                  </p>
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle cx="12" cy="12" r="10" />
+                      <polyline points="12,6 12,12 16,14" />
+                    </svg>
+                    <span>Closes at {currentCloses}</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Next Session */}
+          <div className="relative overflow-hidden border bg-gradient-to-br from-blue-50/50 via-background to-blue-50/30 p-6 shadow-sm">
+            <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-blue-500/10 to-blue-500/5 rounded-full -translate-y-8 translate-x-8"></div>
+            <div className="relative">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-blue-500 animate-pulse"></div>
+                  <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                    Coming Up
+                  </span>
+                </div>
+                <div className="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-700">
+                  NEXT
+                </div>
+              </div>
+
+              <div className="mb-2">
+                <h3 className="text-2xl font-bold text-blue-600">{next}</h3>
+              </div>
+
+              {nextDescription && (
+                <div className="space-y-2">
+                  <p className="text-sm text-muted-foreground font-medium">
+                    {nextDescription}
+                  </p>
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle cx="12" cy="12" r="10" />
+                      <polyline points="12,6 12,12 16,14" />
+                    </svg>
+                    <span>Opens at {nextOpens}</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </CardContent>
     </Card>
